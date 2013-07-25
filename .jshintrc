@@ -10,6 +10,6 @@
     "browser" : true,   // Web Browser (window, document, etc)
     "devel" : true,     // Development/debugging (alert, confirm, etc)
     "node" : true,      // Node.js
-    "latedef" : true    // true: Require variables to be defined before use (helps avoid hoisting bugs)
+    "latedef" : true,   // true: Require variables to be defined before use (helps avoid hoisting bugs)
     "laxcomma": true
 }
