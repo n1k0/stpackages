@@ -1,0 +1,42 @@
+{
+  "name": "stpackages",
+  "description": "App listing Sublime Text packages",
+  "version": "0.0.1",
+  "author": {
+    "name": "Nicolas Perriault",
+    "email": "nicolas@perriault.net"
+  },
+  "dependencies": {
+    "async": "0.2.*",
+    "bower": "1.0.*",
+    "express": "3.3.4",
+    "request": "2.*",
+    "github": ">= 0.1.10"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "sinon": "*",
+    "jshint": "2.*"
+  },
+  "keywords": [
+    "sublimetext",
+    "webapp"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/n1k0/stpackages"
+  },
+  "scripts": {
+    "import": "node imports.js",
+    "run": "node app.js",
+    "test": "XXX"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/n1k0/stpackages"
+  }
+}

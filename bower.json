@@ -1,0 +1,13 @@
+{
+  "name": "stpackages",
+  "version": "0.0.1",
+
+  "ignore": [
+    ".jshintrc"
+  ],
+  "dependencies": {
+    "zepto": "*",
+    "backbone": "1.0.0",
+    "ractive": "*"
+  }
+}
