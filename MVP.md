@@ -20,6 +20,7 @@ Information to display:
 - by github stargazers DESC
 - by date added DESC
 - by date updated DESC
+- by tag [custom]
 
 ### View package details
 
