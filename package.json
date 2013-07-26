@@ -28,9 +28,9 @@
     "url": "git://github.com/n1k0/stpackages"
   },
   "scripts": {
-    "import": "node imports.js",
-    "run": "node app.js",
-    "test": "XXX"
+    "import": "make import",
+    "run": "make run",
+    "test": "make test"
   },
   "engines": {
     "node": "*"
