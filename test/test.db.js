@@ -205,6 +205,25 @@ describe("Database", function() {
       });
     });
 
+    describe("#virtual", function() {
+      var query;
+
+      beforeEach(function() {
+        query = new db.PackageQuery([{a: 1, b: 2}, {a: 2, b: 4}, {a: 4, b: 8}]);
+      });
+
+      it("should create a new virtual field for records", function() {
+        query.virtual("c", function(record) {
+          return record.a + record.b;
+        });
+        expect(query.all()).to.deep.equal([
+          {a: 1, b: 2, c: 3},
+          {a: 2, b: 4, c: 6},
+          {a: 4, b: 8, c: 12}
+        ]);
+      });
+    });
+
     describe("#findByTag", function() {
       var query;
 
@@ -247,11 +266,19 @@ describe("Database", function() {
       });
 
       it("should allow chaining", function() {
-        query.filter({tags: "c"}).order("nb", "desc");
+        query
+          .filter({tags: "c"})
+          .order("nb", "desc")
+          .virtual("name", function(record) {
+            return record.slug.toUpperCase();
+          })
+          .only("name");
         expect(query).to.have.length.of(3);
-        expect(query.all().map(function(record) {
-          return record.slug;
-        })).to.deep.equal(["pkga", "pkgc", "pkgb"]);
+        expect(query.all()).to.deep.equal([
+          {name: "PKGA"},
+          {name: "PKGC"},
+          {name: "PKGB"}
+        ]);
       });
     });
   });

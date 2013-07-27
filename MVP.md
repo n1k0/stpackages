@@ -71,6 +71,10 @@ Information to display:
 - by ST version compatibility (2, 3, 2+3) [custom]
 - by name ASC
 - by github stargazers DESC
+- by popularity DESC:
+    ```
+    (stargazers + (forks * 2) - (issues * 3)) / Math.round((new Date() - new Date(created_at)) / 1000 / 60 / 60 / 24)
+    ```
 - by date added DESC
 - by date updated DESC
 - by tag (investigating)
