@@ -1,0 +1,13 @@
+{
+  "url": "https://github.com/foo/pkga",
+  "type": "github",
+  "name": "Package A",
+  "slug": "pkga",
+  "author": "author",
+  "homepage": "https://github.com/foo/pkga",
+  "description": "This is package A",
+  "updatedAt": "2013-04-12T17:33:49Z",
+  "nbIssues": 42,
+  "nbStargazers": 24,
+  "readme": "# Package A"
+}

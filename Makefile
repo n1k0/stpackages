@@ -1,5 +1,5 @@
 MOCHA_OPTS= --check-leaks
-REPORTER = dot
+REPORTER = spec
 
 import:
 	node import.js
