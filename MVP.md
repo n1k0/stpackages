@@ -6,7 +6,7 @@ MVP
 ### Import script
 
 - √ <del>Import initial packages database using [Package Control JSON db] as a source.</del>
-- Don't override package database files if they exist.
+- √ <del>Don't override package database files if they exist.</del>
 
 ### Sync script
 
@@ -21,11 +21,15 @@ MVP
 
 ### Tagging script
 
+(investigating)
+
 Manual tagging of packages using a cli script.
 
 Use scenarios:
 
 #### Tag packages
+
+(investigating)
 
 Interactively ask tags for untagged packages:
 
@@ -39,6 +43,8 @@ tag2 tag4
 ```
 
 #### Tag a single package
+
+(investigating)
 
 To set/add tags for a single package:
 
@@ -67,7 +73,8 @@ Information to display:
 - by github stargazers DESC
 - by date added DESC
 - by date updated DESC
-- by tag [custom]
+- by tag (investigating)
+- by searched term (use [search-index](https://github.com/fergiemcdowall/search-index))
 
 ### View package details
 
@@ -76,7 +83,7 @@ Information to display:
 - name
 - github url
 - ST version compatibility
-- tags
+- tags (investigating)
 - README, if any
 - author, if any
 

@@ -29,6 +29,13 @@ describe("Database", function() {
       expect(query.packages).to.deep.equal([]);
     });
 
+    describe("toJSON", function() {
+      it("should return current collection as JSON", function() {
+        var query = new db.PackageQuery([]);
+        expect(query.toJSON()).to.equal("[]");
+      });
+    });
+
     describe("filter", function() {
       var query;
 
@@ -90,6 +97,29 @@ describe("Database", function() {
           return record.bar;
         });
         expect(values).to.deep.equal([3, 1, 2]);
+      });
+    });
+
+    describe("limit", function() {
+      var query;
+
+      beforeEach(function() {
+        query = new db.PackageQuery([
+          {slug: "pkga"},
+          {slug: "pkgb"},
+          {slug: "pkgc"}
+        ]);
+      });
+
+      it("should limit collection length to max value", function() {
+        expect(query.limit(2)).to.have.length.of(2);
+        expect(query.at(0).slug).to.equal("pkga");
+        expect(query.at(1).slug).to.equal("pkgb");
+      });
+
+      it("should limit collection offset to start & max values", function() {
+        expect(query.limit(1, 1)).to.have.length.of(1);
+        expect(query.at(0).slug).to.equal("pkgb");
       });
     });
 

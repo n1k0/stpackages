@@ -11,7 +11,8 @@
     "bower": "1.0.*",
     "express": "3.3.4",
     "request": "2.*",
-    "github": ">= 0.1.10"
+    "github": ">= 0.1.10",
+    "search-index": "0.2.7"
   },
   "devDependencies": {
     "nodemon": "*",
