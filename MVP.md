@@ -113,3 +113,8 @@ Basically a form which sends me an email.
 
 
 [Package Control JSON db]: https://raw.github.com/wbond/package_control_channel/master/repositories.json
+
+Future
+======
+
+- trends (keeping track of stargazer count)

@@ -4,6 +4,7 @@ var db = require('./lib/db');
 var app = express();
 
 var dataDir = path.join(__dirname, 'data');
+var perPage = ~~process.env.MAX_PER_PAGE || 10;
 
 app.use(express.static(__dirname + '/static'));
 app.use(app.router);
@@ -14,7 +15,18 @@ function query() {
 
 app.get('/api/recent', function(req, res) {
   res.set('Content-Type', 'application/json');
-  res.send(query().order("updatedAt", "desc").limit(10).toJSON());
+  res.send(query().order('updatedAt', 'desc')
+                  .limit(perPage)
+                  .except('readme')
+                  .toJSON());
+});
+
+app.get('/api/popular', function(req, res) {
+  res.set('Content-Type', 'application/json');
+  res.send(query().order('nbStargazers', 'desc')
+                  .limit(perPage)
+                  .except('readme')
+                  .toJSON());
 });
 
 app.start = function() {

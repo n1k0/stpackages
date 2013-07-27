@@ -24,19 +24,19 @@ describe("Database", function() {
   });
 
   describe("PackageQuery", function() {
-    describe("constructor", function() {
+    describe("#constructor", function() {
       var query = new db.PackageQuery([]);
-      expect(query.packages).to.deep.equal([]);
+      expect(query).to.have.length.of(0);
     });
 
-    describe("toJSON", function() {
+    describe("#toJSON", function() {
       it("should return current collection as JSON", function() {
         var query = new db.PackageQuery([]);
         expect(query.toJSON()).to.equal("[]");
       });
     });
 
-    describe("filter", function() {
+    describe("#filter", function() {
       var query;
 
       beforeEach(function() {
@@ -67,7 +67,7 @@ describe("Database", function() {
       });
     });
 
-    describe("order", function() {
+    describe("#order", function() {
       var query;
 
       beforeEach(function() {
@@ -100,7 +100,7 @@ describe("Database", function() {
       });
     });
 
-    describe("limit", function() {
+    describe("#limit", function() {
       var query;
 
       beforeEach(function() {
@@ -123,7 +123,7 @@ describe("Database", function() {
       });
     });
 
-    describe("findFirstBySlug", function() {
+    describe("#findFirstBySlug", function() {
       var query;
 
       beforeEach(function() {
@@ -143,7 +143,69 @@ describe("Database", function() {
       });
     });
 
-    describe("findByTag", function() {
+    describe("#except", function() {
+      var query;
+
+      beforeEach(function() {
+        query = new db.PackageQuery([
+          {slug: "pkga", nb: 3, tags: ["a", "b", "c"]},
+          {slug: "pkgb", nb: 1, tags: ["a", "c"]},
+          {slug: "pkgc", nb: 2, tags: ["c"]},
+          {slug: "pkgd", nb: 0, tags: ["d"]}
+        ]);
+      });
+
+      it("should retrieve records except a single defined field", function() {
+        query.except("slug");
+        expect(query).to.have.length.of(4);
+        expect(query.at(0)).to.deep.equal({nb: 3, tags: ["a", "b", "c"]});
+      });
+
+      it("should retrieve records except multiple defined fields", function() {
+        query.except("slug", "nb");
+        expect(query).to.have.length.of(4);
+        expect(query.at(0)).to.deep.equal({tags: ["a", "b", "c"]});
+      });
+
+      it("should retrieve records normally if no field is defined", function() {
+        query.except();
+        expect(query).to.have.length.of(4);
+        expect(query.at(0)).to.deep.equal({slug: "pkga", nb: 3, tags: ["a", "b", "c"]});
+      });
+    });
+
+    describe("#only", function() {
+      var query;
+
+      beforeEach(function() {
+        query = new db.PackageQuery([
+          {slug: "pkga", nb: 3, tags: ["a", "b", "c"]},
+          {slug: "pkgb", nb: 1, tags: ["a", "c"]},
+          {slug: "pkgc", nb: 2, tags: ["c"]},
+          {slug: "pkgd", nb: 0, tags: ["d"]}
+        ]);
+      });
+
+      it("should retrieve records with a single defined field", function() {
+        query.only("slug");
+        expect(query).to.have.length.of(4);
+        expect(query.at(0)).to.deep.equal({slug: "pkga"});
+      });
+
+      it("should retrieve records with multiple defined fields", function() {
+        query.only("slug", "nb");
+        expect(query).to.have.length.of(4);
+        expect(query.at(0)).to.deep.equal({slug: "pkga", nb: 3});
+      });
+
+      it("should retrieve records normally if no field is defined", function() {
+        query.only();
+        expect(query).to.have.length.of(4);
+        expect(query.at(0)).to.deep.equal({slug: "pkga", nb: 3, tags: ["a", "b", "c"]});
+      });
+    });
+
+    describe("#findByTag", function() {
       var query;
 
       beforeEach(function() {
