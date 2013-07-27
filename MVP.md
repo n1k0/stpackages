@@ -5,13 +5,13 @@ MVP
 
 ### Import script
 
-Import packages using [Package Control JSON db](https://raw.github.com/wbond/package_control_channel/master/repositories.json)
+Import packages using [Package Control JSON db].
 
 ### List packages
 
 Constraints:
 
-- only packages hosted on Gihub (for now) [filter]
+* √ <del>only packages hosted on Gihub (for now) [filter]</del>
 
 Information to display:
 
@@ -55,3 +55,5 @@ Basically a form which sends me an email.
     - `homepage` for homepage URL
     - `fork` to see if it's a fork
 * README will be fetched and rendered client side
+
+[Package Control JSON db]: https://raw.github.com/wbond/package_control_channel/master/repositories.json
