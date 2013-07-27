@@ -19,47 +19,6 @@ MVP
 
 **Note:** don't deal with renamed or moved packages for now.
 
-### Tagging script
-
-(investigating)
-
-Manual tagging of packages using a cli script.
-
-Use scenarios:
-
-#### Tag packages
-
-(investigating)
-
-Interactively ask tags for untagged packages:
-
-```
-$ make tag
-Package foo at https://github.com/xxx/foo is untagged, please enter tags:
-tag1 tag2 tag3
-Package bar at https://github.com/xxx/bar is untagged, please enter tags:
-tag2 tag4
-...
-```
-
-#### Tag a single package
-
-(investigating)
-
-To set/add tags for a single package:
-
-```
-$ make tag <slug> tag1 tag2 tag3
-<slug> has been tagged with tag1 tag2 tag3.
-```
-
-To replace tags for a single package:
-
-```
-$ make tag <slug> tag1 tag2 tag3 --replace
-<slug> tags have been replaced with tag1 tag2 tag3.
-```
-
 ### List packages
 
 Constraints:
@@ -71,13 +30,9 @@ Information to display:
 - by ST version compatibility (2, 3, 2+3) [custom]
 - by name ASC
 - by github stargazers DESC
-- by popularity DESC:
-    ```
-    (stargazers + (forks * 2) - (issues * 3)) / Math.round((new Date() - new Date(created_at)) / 1000 / 60 / 60 / 24)
-    ```
+- by popularity DESC
 - by date added DESC
 - by date updated DESC
-- by tag (investigating)
 - by searched term (use [search-index](https://github.com/fergiemcdowall/search-index))
 
 ### View package details
@@ -87,13 +42,8 @@ Information to display:
 - name
 - github url
 - ST version compatibility
-- tags (investigating)
 - README, if any
 - author, if any
-
-### Tag a package
-
-Admin job only (suggestion of new tags by email)
 
 ### Submit a package
 
@@ -117,8 +67,3 @@ Basically a form which sends me an email.
 
 
 [Package Control JSON db]: https://raw.github.com/wbond/package_control_channel/master/repositories.json
-
-Future
-======
-
-- trends (keeping track of stargazer count)

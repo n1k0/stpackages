@@ -1,6 +1,7 @@
 var express = require('express');
 var path = require('path');
 var db = require('./lib/db');
+var libmath = require('./lib/math');
 var app = express();
 
 var dataDir = path.join(__dirname, 'data');
@@ -16,16 +17,17 @@ function query() {
 app.get('/api/recent', function(req, res) {
   res.set('Content-Type', 'application/json');
   res.send(query().order('updatedAt', 'desc')
-                  .limit(perPage)
                   .except('readme')
+                  .limit(perPage)
                   .toJSON());
 });
 
 app.get('/api/popular', function(req, res) {
   res.set('Content-Type', 'application/json');
-  res.send(query().order('nbStargazers', 'desc')
-                  .limit(perPage)
+  res.send(query().virtual("popularity", libmath.popularity)
+                  .order('popularity', 'desc')
                   .except('readme')
+                  .limit(perPage)
                   .toJSON());
 });
 
