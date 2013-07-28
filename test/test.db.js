@@ -25,8 +25,21 @@ describe("Database", function() {
 
   describe("PackageQuery", function() {
     describe("#constructor", function() {
-      var query = new db.PackageQuery([]);
-      expect(query).to.have.length.of(0);
+      it("should accept initial data", function() {
+        var query1 = new db.PackageQuery([]);
+        expect(query1).to.have.length.of(0);
+
+        var query2 = new db.PackageQuery([1, 2]);
+        expect(query2).to.have.length.of(2);
+      });
+
+      it("should copy initial data locally", function() {
+        var data = [{a: 1}, {b: 2}];
+        var query = new db.PackageQuery(data);
+        data.push({c: 3});
+        expect(query).to.have.length.of(2);
+        expect(query.all()).to.deep.equal(data.slice(0, 2));
+      });
     });
 
     describe("#toJSON", function() {
