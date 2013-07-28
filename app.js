@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var db = require('./lib/db');
 var libmath = require('./lib/math');
+var si = require('search-index');
 var app = express();
 
 var dataDir = path.join(__dirname, 'data');
@@ -16,6 +17,14 @@ function query() {
 
 app.get('/api/recent', function(req, res) {
   res.set('Content-Type', 'application/json');
+  res.send(query().order('createdAt', 'desc')
+                  .except('readme')
+                  .limit(perPage)
+                  .toJSON());
+});
+
+app.get('/api/updated', function(req, res) {
+  res.set('Content-Type', 'application/json');
   res.send(query().order('updatedAt', 'desc')
                   .except('readme')
                   .limit(perPage)
@@ -29,6 +38,11 @@ app.get('/api/popular', function(req, res) {
                   .except('readme')
                   .limit(perPage)
                   .toJSON());
+});
+
+app.get('/api/details/:slug', function(req, res) {
+  res.set('Content-Type', 'application/json');
+  res.send(query().findFirstBySlug(req.params.slug));
 });
 
 app.start = function() {
