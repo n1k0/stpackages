@@ -28,11 +28,9 @@ Constraints:
 Information to display:
 
 - by ST version compatibility (2, 3, 2+3) [custom]
-- by name ASC
-- by github stargazers DESC
-- by popularity DESC
+- √ <del>by popularity DESC</del>
 - by date added DESC
-- by date updated DESC
+- √ <del>by date updated DESC</del>
 - by searched term (use [search-index](https://github.com/fergiemcdowall/search-index))
 
 ### View package details
@@ -48,6 +46,12 @@ Information to display:
 ### Submit a package
 
 Basically a form which sends me an email.
+
+### HTML/CSS
+
+- homepage
+- list
+- details
 
 ## Technical
 
