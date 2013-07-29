@@ -3,7 +3,6 @@ var http = require('http');
 var path = require('path');
 var db = require('./lib/db');
 var libmath = require('./lib/math');
-var libsearch = require('./lib/search');
 var app = express();
 
 var dataDir = path.join(__dirname, 'data');
@@ -41,7 +40,7 @@ app.get('/api/popular', function(req, res) {
 });
 
 app.get('/api/search', function(req, res) {
-  libsearch.search(req.query.q, {
+  require('./lib/search').search(req.query.q, {
     offset: ~~req.query.offset || 0,
     perPage: perPage
   }, function(err, results) {
