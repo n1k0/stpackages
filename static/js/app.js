@@ -32,14 +32,22 @@ function PackageDetailsCtrl($http, $scope, $routeParams) {
 }
 
 function PackageListCtrl($http, $scope, $routeParams) {
+  var titles = {
+    recent: 'Recently created packages',
+    updated: 'Recently updated packages',
+    popular: 'Popular packages'
+  };
   var type = $routeParams.type || 'recent';
+  $scope.title = titles[type];
   $http.get('/api/' + type).success(function(packages) {
     $scope.packages = packages;
   });
 }
 
 function PackageSearchCtrl($http, $scope, $routeParams) {
-  $http.get('/api/search?q=' + $routeParams.q).success(function(packages) {
+  var q = $routeParams.q;
+  $scope.title = 'Packages matching "' + q + '"';
+  $http.get('/api/search?q=' + q).success(function(packages) {
     $scope.packages = packages;
   });
 }

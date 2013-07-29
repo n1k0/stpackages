@@ -1,9 +1,11 @@
-<ul ng-repeat="package in packages">
-  <li>
+<h2 ng-if="title">{{ title }}</h2>
+<ul>
+  <li ng-repeat="package in packages">
     <section>
-      <h2><a href="/#/details/{{ package.slug }}">{{ package.name }}</a></h2>
+      <h3><a href="/#/details/{{ package.slug }}">{{ package.name }}</a></h3>
       <p>{{ package.description }}</p>
       <aside ng-include="'/partials/infos.html'"></aside>
     </section>
   </li>
 </ul>
+<p ng-if="packages.length === 0">No result.</p>
