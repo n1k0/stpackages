@@ -1,4 +1,5 @@
 var express = require('express');
+var http = require('http');
 var path = require('path');
 var db = require('./lib/db');
 var libmath = require('./lib/math');
@@ -55,14 +56,19 @@ app.get('/api/details/:slug', function(req, res) {
 });
 
 app.start = function() {
-  this.listen(3000);
-  console.log("app started.");
+  this._server = http.createServer(this);
+  this._server.listen(3000);
+};
+
+app.close = function(cb) {
+  this._server.close(cb);
 };
 
 db.load(dataDir, function(err, data) {
   if (err)
     return console.error("Couldn't load database: " + err);
-  console.log("data loaded, %d packages available.", data.length);
   app.set('data', data);
   app.start();
 });
+
+exports.app = app;
