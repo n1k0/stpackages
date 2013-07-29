@@ -1,9 +1,4 @@
 <h2><a href="/#/details/{{ package.slug }}">{{ package.name }}</a></h2>
 <p>{{ package.description }}</p>
-<div class="md">{{ package.readme }}</div>
-<aside>
-  <p>
-    Created on {{ package.createdAt|date }}
-    by <a href="https://github.com/{{ package.author }}">{{ package.author }}</a>.
-  </p>
-</aside>
+<div class="md" ng-if="package.readme">{{ package.readme }}</div>
+<aside ng-include="'/partials/infos.html'"></aside>
