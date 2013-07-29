@@ -2,7 +2,7 @@ var express = require('express');
 var path = require('path');
 var db = require('./lib/db');
 var libmath = require('./lib/math');
-var si = require('search-index');
+var libsearch = require('./lib/search');
 var app = express();
 
 var dataDir = path.join(__dirname, 'data');
@@ -11,8 +11,8 @@ var perPage = ~~process.env.MAX_PER_PAGE || 10;
 app.use(express.static(__dirname + '/static'));
 app.use(app.router);
 
-function query() {
-  return new db.PackageQuery(app.get('data'));
+function query(data) {
+  return new db.PackageQuery(data || app.get('data'));
 }
 
 app.get('/api/recent', function(req, res) {
@@ -35,9 +35,23 @@ app.get('/api/popular', function(req, res) {
   res.set('Content-Type', 'application/json');
   res.send(query().virtual("popularity", libmath.popularity)
                   .order('popularity', 'desc')
-                  .except('readme')
+                  .except('readme', 'popularity')
                   .limit(perPage)
                   .toJSON());
+});
+
+app.get('/api/search', function(req, res) {
+  res.set('Content-Type', 'application/json');
+  libsearch.search(req.query.q, {
+    offset: ~~req.query.offset || 0,
+    perPage: perPage
+  }, function(err, results) {
+    if (err) {
+      res.status(500);
+      return res.send(JSON.stringify(err));
+    }
+    res.send(results);
+  });
 });
 
 app.get('/api/details/:slug', function(req, res) {
