@@ -23,8 +23,8 @@
       <li><a href="/#/popular">Popular</a></li>
     </ul>
   </nav>
-  <form>
-    <input type="text" placeholder="search packages">
+  <form ng-submit="submit()" ng-controller="SearchFormCtrl">
+    <input type="text" ng-model="q" placeholder="search packages">
     <input type="submit" value="Search">
   </form>
   <div ng-view></div>

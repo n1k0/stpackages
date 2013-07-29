@@ -8,7 +8,7 @@ window.onload = function() {
     tables: true,
     breaks: false,
     pedantic: false,
-    sanitize: false,
+    sanitize: false, // github did it for us
     smartLists: true,
     langPrefix: 'language-',
     highlight: function(code) {
@@ -24,6 +24,13 @@ function md() {
   });
 }
 
+function PackageDetailsCtrl($http, $scope, $routeParams) {
+  $http.get('/api/details/' + $routeParams.slug).success(function(pkg) {
+    $scope['package'] = pkg; // yeah, package is a reserved word
+    setTimeout(md); // wonder how to wait for angular to have set scope here
+  });
+}
+
 function PackageListCtrl($http, $scope, $routeParams) {
   var type = $routeParams.type || 'recent';
   $http.get('/api/' + type).success(function(packages) {
@@ -31,11 +38,17 @@ function PackageListCtrl($http, $scope, $routeParams) {
   });
 }
 
-function PackageDetailsCtrl($http, $scope, $routeParams) {
-  $http.get('/api/details/' + $routeParams.slug).success(function(pkg) {
-    $scope['package'] = pkg; // yeah, package is a reserved word
-    setTimeout(md); // wonder how to wait for angular to have set scope here
+function PackageSearchCtrl($http, $scope, $routeParams) {
+  $http.get('/api/search?q=' + $routeParams.q).success(function(packages) {
+    $scope.packages = packages;
   });
+}
+
+function SearchFormCtrl($scope) {
+  $scope.submit = function() {
+    if (this.q)
+      document.location.hash = "/search/" + this.q;
+  };
 }
 
 angular
@@ -46,11 +59,11 @@ angular
         templateUrl: '/partials/details.html',
         controller: PackageDetailsCtrl
       })
-      .when('/:type', {
+      .when('/search/:q', {
         templateUrl: '/partials/list.html',
-        controller: PackageListCtrl
+        controller: PackageSearchCtrl
       })
-      .when('/search?q=:q', {
+      .when('/:type', {
         templateUrl: '/partials/list.html',
         controller: PackageListCtrl
       })
