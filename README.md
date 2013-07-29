@@ -10,6 +10,10 @@ Installation
 
     $ make install
 
+Be sure to create a `data` directory at the root of the project installation:
+
+    $ mkdir data
+
 Import
 ------
 
