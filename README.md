@@ -8,7 +8,7 @@ This is a nodejs Web application listing sublime text packages.
 Installation
 ------------
 
-    $ npm install
+    $ make install
 
 Import
 ------
@@ -17,20 +17,27 @@ An import script is provided to import existing packages living in [Package Cont
 
     $ GITHUB_API_TOKEN=gsdgg6hg54jh800bjb566 make import.js
 
+Indexation
+----------
+
+Then data should be indexed for the search engine to work:
+
+    $ make index
+
 Run
 ---
 
 Development:
 
-You should use [nodemon](https://github.com/remy/nodemon), then:
+Be sure to have [nodemon](https://github.com/remy/nodemon) installed, then:
 
-    $ nodemon app.js
+    $ make dev
 
 Production:
 
-    $ node app.js
+    $ make run
 
 Test
 ----
 
-    $ npm test
+    $ make test
