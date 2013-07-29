@@ -6,56 +6,51 @@ var libsearch = require('./lib/search');
 var app = express();
 
 var dataDir = path.join(__dirname, 'data');
-var perPage = ~~process.env.MAX_PER_PAGE || 10;
+var perPage = ~~process.env.MAX_PER_PAGE || 20;
 
 app.use(express.static(__dirname + '/static'));
 app.use(app.router);
+
+app.set('json spaces', 2);
 
 function query(data) {
   return new db.PackageQuery(data || app.get('data'));
 }
 
 app.get('/api/recent', function(req, res) {
-  res.set('Content-Type', 'application/json');
-  res.send(query().order('createdAt', 'desc')
+  res.json(query().order('createdAt', 'desc')
                   .except('readme')
                   .limit(perPage)
-                  .toJSON());
+                  .all());
 });
 
 app.get('/api/updated', function(req, res) {
-  res.set('Content-Type', 'application/json');
-  res.send(query().order('updatedAt', 'desc')
+  res.json(query().order('updatedAt', 'desc')
                   .except('readme')
                   .limit(perPage)
-                  .toJSON());
+                  .all());
 });
 
 app.get('/api/popular', function(req, res) {
-  res.set('Content-Type', 'application/json');
-  res.send(query().virtual("popularity", libmath.popularity)
+  res.json(query().virtual("popularity", libmath.popularity)
                   .order('popularity', 'desc')
                   .except('readme', 'popularity')
                   .limit(perPage)
-                  .toJSON());
+                  .all());
 });
 
 app.get('/api/search', function(req, res) {
-  res.set('Content-Type', 'application/json');
   libsearch.search(req.query.q, {
     offset: ~~req.query.offset || 0,
     perPage: perPage
   }, function(err, results) {
-    if (err) {
-      res.status(500);
-      return res.send(JSON.stringify(err));
-    }
-    res.send(results);
+    if (err)
+      return res.json(500, err);
+    res.json(results);
   });
 });
 
 app.get('/api/details/:slug', function(req, res) {
-  res.set('Content-Type', 'application/json');
   res.send(query().findFirstBySlug(req.params.slug));
 });
 
