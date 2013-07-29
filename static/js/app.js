@@ -24,11 +24,21 @@ function md() {
   });
 }
 
+function httpError(data, status) {
+  if (status === 0) {
+    // XXX display pretty error instead
+    console.error("HTTP error: no route to host. Are you offline?");
+  } else
+    console.error("HTTP error: " + data);
+}
+
 function PackageDetailsCtrl($http, $scope, $routeParams) {
-  $http.get('/api/details/' + $routeParams.slug).success(function(pkg) {
-    $scope['package'] = pkg; // yeah, package is a reserved word
-    setTimeout(md); // wonder how to wait for angular to have set scope here
-  });
+  $http.get('/api/details/' + $routeParams.slug)
+    .success(function(pkg) {
+      $scope['package'] = pkg; // yeah, package is a reserved word
+      setTimeout(md); // wonder how to wait for angular to have set scope here
+    })
+    .error(httpError);
 }
 
 function PackageListCtrl($http, $scope, $routeParams) {
@@ -39,17 +49,21 @@ function PackageListCtrl($http, $scope, $routeParams) {
   };
   var type = $routeParams.type || 'recent';
   $scope.title = titles[type];
-  $http.get('/api/' + type).success(function(packages) {
-    $scope.packages = packages;
-  });
+  $http.get('/api/' + type)
+    .success(function(packages) {
+      $scope.packages = packages;
+    })
+    .error(httpError);
 }
 
 function PackageSearchCtrl($http, $scope, $routeParams) {
   var q = $routeParams.q;
   $scope.title = 'Packages matching "' + q + '"';
-  $http.get('/api/search?q=' + q).success(function(packages) {
-    $scope.packages = packages;
-  });
+  $http.get('/api/search?q=' + q)
+    .success(function(packages) {
+      $scope.packages = packages;
+    })
+    .error(httpError);
 }
 
 function SearchFormCtrl($scope) {
