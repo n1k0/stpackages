@@ -1,4 +1,4 @@
-/* global angular, marked */
+/* global angular, marked, hljs */
 
 "use strict";
 
@@ -11,9 +11,9 @@ window.onload = function() {
     sanitize: false,
     smartLists: true,
     langPrefix: 'language-',
-    // highlight: function(code, lang) {
-    //   return hljs.highlightAuto(code).value;
-    // }
+    highlight: function(code) {
+      return hljs.highlightAuto(code).value;
+    }
   });
 };
 
