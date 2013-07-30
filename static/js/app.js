@@ -24,12 +24,41 @@ function md() {
   });
 }
 
+function range(N) {
+  return Array.apply(0, Array(N)).map(function(x, y) {
+    return y;
+  });
+}
+
 function httpError(data, status) {
   if (status === 0) {
     // XXX display pretty error instead
-    console.error("HTTP error: no route to host. Are you offline?");
+    console.error("HTTP " + status + "error: no route to host. Are you offline?");
   } else
     console.error("HTTP error: " + data);
+}
+
+function pagination(offset, total, perPage) {
+  return {
+    prev: offset >= perPage ? offset - perPage : null,
+    next: offset < total - perPage ? offset + perPage : null,
+    pages: (function(total) {
+      var pages = range(Math.ceil(total / perPage)).map(function(x) {
+        return {n: x + 1, offset: x * perPage};
+      });
+      if (pages.length <= 11)
+        return pages;
+      return pages.slice(0, 5)
+        .concat([{n: '…', offset: null}])
+        .concat(pages.slice(pages.length - 5, pages.length));
+    })(total)
+  };
+}
+
+function httpResults($scope, results) {
+  $scope.packages = results.packages;
+  $scope.total = results.total;
+  $scope.pagination = pagination($scope.offset, $scope.total, 12);
 }
 
 function PackageDetailsCtrl($http, $scope, $routeParams) {
@@ -48,21 +77,21 @@ function PackageListCtrl($http, $scope, $routeParams) {
     popular: 'Popular packages'
   };
   var type = $routeParams.type || 'recent';
+  $scope.listBaseUrl = '/#/' + type;
   $scope.title = titles[type];
-  $http.get('/api/' + type)
-    .success(function(packages) {
-      $scope.packages = packages;
-    })
+  $scope.offset = ~~$routeParams.offset;
+  $http.get('/api/' + type + '?offset=' + $scope.offset)
+    .success(httpResults.bind(null, $scope))
     .error(httpError);
 }
 
 function PackageSearchCtrl($http, $scope, $routeParams) {
   var q = $routeParams.q;
+  $scope.listBaseUrl = '/#/search/' + encodeURIComponent(q);
   $scope.title = 'Packages matching "' + q + '"';
-  $http.get('/api/search?q=' + q)
-    .success(function(packages) {
-      $scope.packages = packages;
-    })
+  $scope.offset = ~~$routeParams.offset;
+  $http.get('/api/search?q=' + q + '&offset=' + $scope.offset)
+    .success(httpResults.bind(null, $scope))
     .error(httpError);
 }
 

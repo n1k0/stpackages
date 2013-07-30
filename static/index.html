@@ -26,6 +26,9 @@
     margin-bottom: 0;
     margin-left: 10px;
   }
+  .pagination {
+    margin: 22px 0px 20px;
+  }
   </style>
 </head>
 <body>
@@ -41,7 +44,7 @@
 
     <div class="navbar" ng-controller="NavigationCtrl">
       <div class="container">
-        <a class="navbar-brand" href="/#/">Home</a>
+        <a class="navbar-brand" href="/#/" ng-click="setSection('recent')">Home</a>
         <ul class="nav navbar-nav">
           <li ng-class="{active: $section=='recent'}" ng-click="setSection('recent')">
             <a href="/#/recent">recent</a>

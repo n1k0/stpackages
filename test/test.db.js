@@ -4,6 +4,7 @@ var expect = require('chai').expect;
 //var sinon = require('sinon');
 var path = require('path');
 var db = require('../lib/db');
+var range = require('../lib/util').range;
 var testDataDir = path.join(__dirname, 'data');
 
 describe("Database", function() {
@@ -23,19 +24,19 @@ describe("Database", function() {
     });
   });
 
-  describe("PackageQuery", function() {
+  describe("ArrayQuery", function() {
     describe("#constructor", function() {
       it("should accept initial data", function() {
-        var query1 = new db.PackageQuery([]);
+        var query1 = new db.ArrayQuery([]);
         expect(query1).to.have.length.of(0);
 
-        var query2 = new db.PackageQuery([1, 2]);
+        var query2 = new db.ArrayQuery([1, 2]);
         expect(query2).to.have.length.of(2);
       });
 
       it("should copy initial data locally", function() {
         var data = [{a: 1}, {b: 2}];
-        var query = new db.PackageQuery(data);
+        var query = new db.ArrayQuery(data);
         data.push({c: 3});
         expect(query).to.have.length.of(2);
         expect(query.all()).to.deep.equal(data.slice(0, 2));
@@ -44,7 +45,7 @@ describe("Database", function() {
 
     describe("#toJSON", function() {
       it("should return current collection as JSON", function() {
-        var query = new db.PackageQuery([]);
+        var query = new db.ArrayQuery([]);
         expect(query.toJSON()).to.equal("[]");
       });
     });
@@ -53,7 +54,7 @@ describe("Database", function() {
       var query;
 
       beforeEach(function() {
-        query = new db.PackageQuery([
+        query = new db.ArrayQuery([
           {slug: "pkga", foo: "bar", tags: ["a"]},
           {slug: "pkgb", foo: "baz", tags: ["a", "b"]},
           {slug: "pkgc", foo: "bazinga", tags: ["b"]}
@@ -84,7 +85,7 @@ describe("Database", function() {
       var query;
 
       beforeEach(function() {
-        query = new db.PackageQuery([
+        query = new db.ArrayQuery([
           {slug: "pkga", foo: "bar", bar: 3},
           {slug: "pkgb", foo: "baz", bar: 1},
           {slug: "pkgc", foo: "bazinga", bar: 2}
@@ -117,42 +118,34 @@ describe("Database", function() {
       var query;
 
       beforeEach(function() {
-        query = new db.PackageQuery([
-          {slug: "pkga"},
-          {slug: "pkgb"},
-          {slug: "pkgc"}
-        ]);
+        query = new db.ArrayQuery(range(10).map(function(x) {
+          return {slug: "p" + ++x};
+        }));
       });
 
-      it("should limit collection length to max value", function() {
+      it("should limit collection length to max value (a)", function() {
         expect(query.limit(2)).to.have.length.of(2);
-        expect(query.at(0).slug).to.equal("pkga");
-        expect(query.at(1).slug).to.equal("pkgb");
+        expect(query.at(0).slug).to.equal("p1");
+        expect(query.at(1).slug).to.equal("p2");
       });
 
-      it("should limit collection offset to start & max values", function() {
-        expect(query.limit(1, 1)).to.have.length.of(1);
-        expect(query.at(0).slug).to.equal("pkgb");
-      });
-    });
-
-    describe("#findFirstBySlug", function() {
-      var query;
-
-      beforeEach(function() {
-        query = new db.PackageQuery([{slug: "pkga"}, {slug: "pkgb"}]);
+      it("should limit collection length to max value (b)", function() {
+        expect(query.limit(42)).to.have.length.of(10);
+        expect(query.at(0).slug).to.equal("p1");
+        expect(query.at(1).slug).to.equal("p2");
       });
 
-      it("should find a package by its slug", function() {
-        var pkg = query.findFirstBySlug("pkgb");
-        expect(pkg).to.be.a("object");
-        expect(pkg.slug).to.equal("pkgb");
+      it("should limit collection offset to start & max values (a)", function() {
+        expect(query.limit(1, 2)).to.have.length.of(2);
+        expect(query.at(0).slug).to.equal("p2");
+        expect(query.at(1).slug).to.equal("p3");
+
       });
 
-      it("should throw if package is not found", function() {
-        expect(function() {
-          return query.findFirstBySlug("xxx");
-        }).Throw(Error);
+      it("should limit collection offset to start & max values (b)", function() {
+        expect(query.limit(5, 42)).to.have.length.of(5);
+        expect(query.at(0).slug).to.equal("p6");
+        expect(query.at(4).slug).to.equal("p10");
       });
     });
 
@@ -160,7 +153,7 @@ describe("Database", function() {
       var query;
 
       beforeEach(function() {
-        query = new db.PackageQuery([
+        query = new db.ArrayQuery([
           {slug: "pkga", nb: 3, tags: ["a", "b", "c"]},
           {slug: "pkgb", nb: 1, tags: ["a", "c"]},
           {slug: "pkgc", nb: 2, tags: ["c"]},
@@ -191,7 +184,7 @@ describe("Database", function() {
       var query;
 
       beforeEach(function() {
-        query = new db.PackageQuery([
+        query = new db.ArrayQuery([
           {slug: "pkga", nb: 3, tags: ["a", "b", "c"]},
           {slug: "pkgb", nb: 1, tags: ["a", "c"]},
           {slug: "pkgc", nb: 2, tags: ["c"]},
@@ -222,7 +215,7 @@ describe("Database", function() {
       var query;
 
       beforeEach(function() {
-        query = new db.PackageQuery([{a: 1, b: 2}, {a: 2, b: 4}, {a: 4, b: 8}]);
+        query = new db.ArrayQuery([{a: 1, b: 2}, {a: 2, b: 4}, {a: 4, b: 8}]);
       });
 
       it("should create a new virtual field for records", function() {
@@ -234,6 +227,57 @@ describe("Database", function() {
           {a: 2, b: 4, c: 6},
           {a: 4, b: 8, c: 12}
         ]);
+      });
+    });
+
+    describe("Chaining methods", function() {
+      var query;
+
+      beforeEach(function() {
+        query = new db.ArrayQuery([
+          {slug: "pkga", nb: 3, tags: ["a", "b", "c"]},
+          {slug: "pkgb", nb: 1, tags: ["a", "c"]},
+          {slug: "pkgc", nb: 2, tags: ["c"]},
+          {slug: "pkgd", nb: 0, tags: ["d"]}
+        ]);
+      });
+
+      it("should allow chaining", function() {
+        query
+          .filter({tags: "c"})
+          .order("nb", "desc")
+          .virtual("name", function(record) {
+            return record.slug.toUpperCase();
+          })
+          .only("name");
+        expect(query).to.have.length.of(3);
+        expect(query.all()).to.deep.equal([
+          {name: "PKGA"},
+          {name: "PKGC"},
+          {name: "PKGB"}
+        ]);
+      });
+    });
+  });
+
+  describe("PackageQuery", function() {
+    describe("#findFirstBySlug", function() {
+      var query;
+
+      beforeEach(function() {
+        query = new db.PackageQuery([{slug: "pkga"}, {slug: "pkgb"}]);
+      });
+
+      it("should find a package by its slug", function() {
+        var pkg = query.findFirstBySlug("pkgb");
+        expect(pkg).to.be.a("object");
+        expect(pkg.slug).to.equal("pkgb");
+      });
+
+      it("should throw if package is not found", function() {
+        expect(function() {
+          return query.findFirstBySlug("xxx");
+        }).Throw(Error);
       });
     });
 
@@ -266,33 +310,34 @@ describe("Database", function() {
       });
     });
 
-    describe("Chaining methods", function() {
+    describe("#getPopular", function() {
       var query;
 
       beforeEach(function() {
-        query = new db.PackageQuery([
-          {slug: "pkga", nb: 3, tags: ["a", "b", "c"]},
-          {slug: "pkgb", nb: 1, tags: ["a", "c"]},
-          {slug: "pkgc", nb: 2, tags: ["c"]},
-          {slug: "pkgd", nb: 0, tags: ["d"]}
-        ]);
+        query = new db.PackageQuery(range(10).map(function(x) {
+          x += 1;
+          return {
+            slug: "p" + x,
+            createdAt: "2013-01-0" + x + "T00:00:00Z",
+            updatedAt: "2013-01-0" + x + "T00:00:00Z",
+            nbStargazers: x,
+            nbIssues: x,
+            nbIssues: x
+          };
+        }));
       });
 
-      it("should allow chaining", function() {
-        query
-          .filter({tags: "c"})
-          .order("nb", "desc")
-          .virtual("name", function(record) {
-            return record.slug.toUpperCase();
-          })
-          .only("name");
-        expect(query).to.have.length.of(3);
-        expect(query.all()).to.deep.equal([
-          {name: "PKGA"},
-          {name: "PKGC"},
-          {name: "PKGB"}
-        ]);
+      it("should retrieve popular package", function() {
+
       });
+    });
+
+    describe("#getRecent", function() {
+
+    });
+
+    describe("#getUpdated", function() {
+
     });
   });
 });

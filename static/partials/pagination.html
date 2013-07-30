@@ -1,0 +1,14 @@
+<nav class="pkg-pagination">
+  <ul class="pagination pagination-small">
+    <li ng-class="{disabled: pagination.prev==null}">
+      <a href="{{ listBaseUrl }}?offset={{ pagination.prev }}">&laquo;</a>
+    </li>
+    <li ng-class="{active: offset==page.offset, disabled: page.offset==null}"
+        ng-repeat="page in pagination.pages">
+      <a href="{{ listBaseUrl }}?offset={{ page.offset }}">{{ page.n }}</a>
+    </li>
+    <li ng-class="{disabled: pagination.next==null}">
+      <a href="{{ listBaseUrl }}?offset={{ pagination.next }}">&raquo;</a>
+    </li>
+  </ul>
+</nav>
