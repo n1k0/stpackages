@@ -41,7 +41,8 @@
         </ul>
         <form class="pkg-search navbar-form pull-left" ng-submit="submit()">
           <label>
-            <input type="search" class="form-control" ng-model="q" placeholder="Search packages">
+            <input type="search" class="form-control" ng-model="q" placeholder="Search packages"
+                   ng-click="setSection('search')">
           </label>
           <button type="submit" class="btn btn-primary">Search</button>
         </form>
