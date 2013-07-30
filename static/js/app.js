@@ -66,7 +66,11 @@ function PackageSearchCtrl($http, $scope, $routeParams) {
     .error(httpError);
 }
 
-function SearchFormCtrl($scope) {
+function NavigationCtrl($scope) {
+  $scope.$section = "recent";
+  $scope.setSection = function(name) {
+    $scope.$section = name;
+  };
   $scope.submit = function() {
     if (this.q)
       document.location.hash = "/search/" + this.q;

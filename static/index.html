@@ -25,15 +25,21 @@
       </p>
     </header>
 
-    <div class="navbar">
+    <div class="navbar" ng-controller="NavigationCtrl">
       <div class="container">
         <a class="navbar-brand" href="/#/">Home</a>
         <ul class="nav navbar-nav">
-          <li><a href="/#/recent">recent</a></li>
-          <li><a href="/#/updated">Updated</a></li>
-          <li><a href="/#/popular">Popular</a></li>
+          <li ng-class="{active: $section=='recent'}" ng-click="setSection('recent')">
+            <a href="/#/recent">recent</a>
+          </li>
+          <li ng-class="{active: $section=='updated'}" ng-click="setSection('updated')">
+            <a href="/#/updated">Updated</a>
+          </li>
+          <li ng-class="{active: $section=='popular'}" ng-click="setSection('popular')">
+            <a href="/#/popular">Popular</a>
+          </li>
         </ul>
-        <form class="pkg-search navbar-form pull-left" ng-submit="submit()" ng-controller="SearchFormCtrl">
+        <form class="pkg-search navbar-form pull-left" ng-submit="submit()">
           <label>
             <input type="search" class="form-control" ng-model="q" placeholder="Search packages">
           </label>
