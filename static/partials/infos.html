@@ -1,8 +1,7 @@
-<aside>
-  <p>
-    Created on {{ package.createdAt|date }}
-    by <a href="https://github.com/{{ package.author }}">{{ package.author }}</a>
-    | <a href="{{ package.url }}">repository</a>
-    <span ng-if="package.homepage">| <a href="{{ package.homepage }}">homepage</a></span>
-  </p>
-</aside>
+<p>
+  Created {{ package.createdAt|date }}
+  by <a href="https://github.com/{{ package.author }}">{{ package.author }}</a> |
+  last updated {{ package.updatedAt|date }}
+  | <a href="{{ package.url }}">repository</a>
+  <span ng-if="package.homepage">| <a href="{{ package.homepage }}">homepage</a></span>
+</p>

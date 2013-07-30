@@ -3,34 +3,43 @@
 <head>
   <meta charset="utf-8">
   <title>Sublime Packages</title>
+  <link rel="stylesheet" type="text/css" href="/vendor/bootstrap-3.0.0RC1/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/vendor/highlight/styles.css">
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
   <script src="/js/app.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <header>
-    <h1><a href="/#/">Sublime Packages</a></h1>
-    <p><em>
-      A searchable index of <a href="http://sublimetext.com/">Sublime Text</a>
-      packages hosted on <a href="https://github.com/">Github</a> &amp; installable with
-      <a href="http://wbond.net/sublime_packages/package_control">Package Control</a>.
-    </em></p>
-  </header>
-  <nav>
-    <ul>
-      <li><a href="/#/">Home</a></li>
-      <li><a href="/#/updated">Updated</a></li>
-      <li><a href="/#/popular">Popular</a></li>
-    </ul>
-  </nav>
-  <form ng-submit="submit()" ng-controller="SearchFormCtrl">
-    <input type="text" ng-model="q" placeholder="search packages">
-    <input type="submit" value="Search">
-  </form>
-  <div ng-view></div>
-  <footer>
-    <p>Follow <a href="https://twitter.com/SublimePackages">@SublimePackages</a> on Twitter</p>
-  </footer>
+  <div class="container">
+    <header>
+      <h1><a href="/#/">Sublime Packages</a></h1>
+      <p class="lead"><em>
+        A searchable index of <a href="http://sublimetext.com/">Sublime Text</a>
+        packages hosted on <a href="https://github.com/">Github</a> &amp; installable with
+        <a href="http://wbond.net/sublime_packages/package_control">Package Control</a>.
+      </em></p>
+    </header>
+
+    <nav class="navigation">
+      <ul>
+        <li><a href="/#/">Home</a></li>
+        <li><a href="/#/updated">Updated</a></li>
+        <li><a href="/#/popular">Popular</a></li>
+      </ul>
+    </nav>
+
+    <form class="pkg-search" ng-submit="submit()" ng-controller="SearchFormCtrl">
+      <input type="search" class="topcoat-search-input--large" ng-model="q" placeholder="search packages">
+      <input type="submit" class="topcoat-button" value="Search">
+    </form>
+
+    <div class="main" ng-view></div>
+
+    <footer>
+      <p>Follow <a href="https://twitter.com/SublimePackages">@SublimePackages</a> on Twitter</p>
+    </footer>
+  </div>
+
   <script src="/vendor/marked.js"></script>
   <script src="/vendor/highlight/highlight.pack.js"></script>
 </body>
