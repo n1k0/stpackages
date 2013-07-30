@@ -38,20 +38,26 @@ function httpError(data, status) {
     console.error("HTTP error: " + data);
 }
 
+function pages(size, offset, total, perPage) {
+  var half = Math.floor(size / 2);
+  var pages = range(Math.ceil(total / perPage)).map(function(x) {
+    return {n: x + 1, offset: x * perPage};
+  });
+  if (pages.length < size)
+    return pages;
+  var current = pages.map(function(page) {
+    return page.offset;
+  }).indexOf(offset);
+  return current < half ? pages.slice(0, size) : pages.slice(current - half, current + half);
+}
+
 function pagination(offset, total, perPage) {
   return {
+    first: 0,
+    last: total - (total % perPage),
     prev: offset >= perPage ? offset - perPage : null,
     next: offset < total - perPage ? offset + perPage : null,
-    pages: (function(total) {
-      var pages = range(Math.ceil(total / perPage)).map(function(x) {
-        return {n: x + 1, offset: x * perPage};
-      });
-      if (pages.length <= 11)
-        return pages;
-      return pages.slice(0, 5)
-        .concat([{n: '…', offset: null}])
-        .concat(pages.slice(pages.length - 5, pages.length));
-    })(total)
+    pages: pages(8, offset, total, perPage)
   };
 }
 
