@@ -1,0 +1,26 @@
+<ul class="list-inline pull-right">
+  <li>
+    <a href="{{ package.url }}/stargazers" title="stargazers">
+      <span class="badge">
+        <span class="glyphicon glyphicon-star"></span>
+        {{ package.nbStargazers }}
+      </span>
+    </a>
+  </li>
+  <li>
+    <a href="{{ package.url }}/network/members" title="forks">
+      <span class="badge">
+        <span class="glyphicon glyphicon-random"></span>
+        {{ package.nbForks }}
+      </span>
+    </a>
+  </li>
+  <li>
+    <a href="{{ package.url }}/issues" title="issues">
+      <span class="badge">
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+        {{ package.nbIssues }}
+      </span>
+    </a>
+  </li>
+</ul>

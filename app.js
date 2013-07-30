@@ -6,7 +6,7 @@ var libmath = require('./lib/math');
 var app = express();
 
 var dataDir = path.join(__dirname, 'data');
-var perPage = ~~process.env.MAX_PER_PAGE || 20;
+var perPage = ~~process.env.MAX_PER_PAGE || 12;
 
 app.use(express.static(__dirname + '/static'));
 app.use(app.router);

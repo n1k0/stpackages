@@ -1,4 +1,6 @@
-<h2 ng-if="title">{{ title }}</h2>
+<div class="page-header">
+  <h2 ng-if="title">{{ title }}</h2>
+</div>
 
 <ul class="pkg-list list-unstyled">
   <li ng-repeat="package in packages">
@@ -8,26 +10,13 @@
           <h3 class="panel-title pull-left">
             <a href="/#/details/{{ package.slug }}">{{ package.name }}</a>
           </h3>
-          <ul class="list-inline pull-right">
-            <li>
-              <a href="{{ package.url }}/stargazers">
-                <span class="badge">{{ package.nbStargazers }} stargazers</span>
-              </a>
-            </li>
-            <li>
-              <a href="{{ package.url }}/network">
-                <span class="badge">{{ package.nbForks }} forks</span>
-              </a>
-            </li>
-            <li>
-              <a href="{{ package.url }}/issues">
-                <span class="badge">{{ package.nbIssues }} issues</span>
-              </a>
-            </li>
-          </ul>
+          <div ng-include="'/partials/badges.html'"></div>
           <div class="clearfix"></div>
         </div>
-        <p>{{ package.description }}</p>
+        <blockquote ng-if="package.description">
+          <p>{{ package.description }}</p>
+        </blockquote>
+        <p ng-if="!package.description">(no description available)</p>
         <div class="panel-footer">
           <aside ng-include="'/partials/infos.html'"></aside>
         </div>

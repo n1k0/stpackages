@@ -4,11 +4,16 @@
   <meta charset="utf-8">
   <title>Sublime Packages</title>
   <link rel="stylesheet" type="text/css" href="/vendor/bootstrap-3.0.0RC1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/vendor/glyphicons/css/bootstrap-glyphicons.css">
   <link rel="stylesheet" type="text/css" href="/vendor/highlight/styles.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+  <script src="/vendor/angular/angular-1.1.5.min.js"></script>
   <script src="/js/app.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+  .badge .glyphicon {
+    vertical-align: middle;
+    padding-right: 2px;
+  }
   .pkg-list li .panel-title a {
     color: #333;
   }
@@ -63,16 +68,16 @@
 
     <div class="main" ng-view></div>
 
-    <footer>
-      <p class="text-center">
-        Handcrafted with love by <a href="https://nicolas.perriault.net/">n1k0</a> |
-        <a href="https://github.com/n1k0/stpackages/issues/new">Report an issue</a> |
-        Follow <a href="https://twitter.com/SublimePackages">@SublimePackages</a> on Twitter
-      </p>
+    <hr>
+
+    <footer class="well well-small text-center">
+      Handcrafted with love by <a href="https://nicolas.perriault.net/">n1k0</a> |
+      <a href="https://github.com/n1k0/stpackages/issues/new">Report an issue</a> |
+      Follow <a href="https://twitter.com/SublimePackages">@SublimePackages</a> on Twitter
     </footer>
   </div>
 
-  <script src="/vendor/marked.js"></script>
+  <script src="/vendor/marked/marked.js"></script>
   <script src="/vendor/highlight/highlight.pack.js"></script>
 </body>
 </html>

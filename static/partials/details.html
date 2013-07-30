@@ -1,7 +1,11 @@
 <div class="pkg-details">
   <article class="pkg-article">
-    <h2><a href="/#/details/{{ package.slug }}">{{ package.name }}</a></h2>
-    <blockquote class="pkg-description"><p>{{ package.description }}</p></blockquote>
+    <div class="page-header">
+      <h2><a href="/#/details/{{ package.slug }}">{{ package.name }}</a></h2>
+    </div>
+    <blockquote ng-if="package.description" class="pkg-description">
+      <p>{{ package.description }}</p>
+    </blockquote>
     <div class="panel">
       <div class="panel-heading">
         <h3 class="panel-title">README</h3>
