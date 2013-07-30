@@ -11,7 +11,7 @@
     "express": "3.3.4",
     "request": "2.*",
     "github": ">= 0.1.10",
-    "search-index": "0.2.7"
+    "search-index": "https://github.com/n1k0/search-index/archive/patch-1.tar.gz"
   },
   "devDependencies": {
     "nodemon": "*",
