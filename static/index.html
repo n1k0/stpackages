@@ -8,35 +8,50 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
   <script src="/js/app.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  .pkg-search.navbar-form {
+    margin-bottom: 0px;
+  }
+  </style>
 </head>
 <body>
   <div class="container">
     <header>
       <h1><a href="/#/">Sublime Packages</a></h1>
-      <p class="lead"><em>
+      <p class="lead">
         A searchable index of <a href="http://sublimetext.com/">Sublime Text</a>
         packages hosted on <a href="https://github.com/">Github</a> &amp; installable with
         <a href="http://wbond.net/sublime_packages/package_control">Package Control</a>.
-      </em></p>
+      </p>
     </header>
 
-    <nav class="navigation">
-      <ul>
-        <li><a href="/#/">Home</a></li>
-        <li><a href="/#/updated">Updated</a></li>
-        <li><a href="/#/popular">Popular</a></li>
-      </ul>
-    </nav>
-
-    <form class="pkg-search" ng-submit="submit()" ng-controller="SearchFormCtrl">
-      <input type="search" class="topcoat-search-input--large" ng-model="q" placeholder="search packages">
-      <input type="submit" class="topcoat-button" value="Search">
-    </form>
+    <div class="navbar">
+      <div class="container">
+        <a class="navbar-brand" href="/#/">Home</a>
+        <ul class="nav navbar-nav">
+          <li><a href="/#/recent">recent</a></li>
+          <li><a href="/#/updated">Updated</a></li>
+          <li><a href="/#/popular">Popular</a></li>
+        </ul>
+        <form class="pkg-search navbar-form pull-left" ng-submit="submit()" ng-controller="SearchFormCtrl">
+          <label>
+            <input type="search" class="form-control" ng-model="q" placeholder="Search packages">
+          </label>
+          <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        <ul class="nav navbar-nav pull-right">
+          <li><a href="/#/about">About</a></li>
+        </ul>
+      </div>
+    </div>
 
     <div class="main" ng-view></div>
 
     <footer>
-      <p>Follow <a href="https://twitter.com/SublimePackages">@SublimePackages</a> on Twitter</p>
+      <p class="text-center">
+        Handcrafted with love by <a href="https://nicolas.perriault.net/">n1k0</a> |
+        Follow <a href="https://twitter.com/SublimePackages">@SublimePackages</a> on Twitter
+      </p>
     </footer>
   </div>
 

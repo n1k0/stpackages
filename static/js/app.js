@@ -85,6 +85,9 @@ angular
         templateUrl: '/partials/list.html',
         controller: PackageSearchCtrl
       })
+      .when('/about', {
+        templateUrl: '/partials/about.html'
+      })
       .when('/:type', {
         templateUrl: '/partials/list.html',
         controller: PackageListCtrl

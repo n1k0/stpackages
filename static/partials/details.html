@@ -1,8 +1,8 @@
 <div class="pkg-details">
   <article class="pkg-article">
     <h2><a href="/#/details/{{ package.slug }}">{{ package.name }}</a></h2>
-    <section class="pkg-description"><p>{{ package.description }}</p></section>
-    <section class="pkg-readme md">{{ package.readme }}></section>
+    <blockquote class="pkg-description"><p>{{ package.description }}</p></blockquote>
+    <div class="pkg-readme md">{{ package.readme }}></div>
   </article>
   <aside class="pkg-infos" ng-include="'/partials/infos.html'"></aside>
 </div>
