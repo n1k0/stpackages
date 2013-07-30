@@ -10,14 +10,7 @@ MVP
 
 ### Sync script
 
-* update latest information for a given package:
-    - number of stargazers
-    - number of issues
-    - latest update date
-    - description
-    - latest version of README
-
-**Note:** don't deal with renamed or moved packages for now.
+- √ <del>basically reimport all the data :)</del>
 
 ### List packages
 
@@ -27,31 +20,27 @@ Constraints:
 
 Information to display:
 
-- by ST version compatibility (2, 3, 2+3) [custom]
 - √ <del>by popularity DESC</del>
-- by date added DESC
+- √ <del>by date added DESC</del>
 - √ <del>by date updated DESC</del>
-- by searched term (use [search-index](https://github.com/fergiemcdowall/search-index))
+- √ <del>by searched term (use [search-index](https://github.com/fergiemcdowall/search-index))</del>
 
 ### View package details
 
 Information to display:
 
-- name
-- github url
-- ST version compatibility
-- README, if any
-- author, if any
-
-### Submit a package
-
-Basically a form which sends me an email.
+- √ <del>name</del>
+- √ <del>github url</del>
+- √ <del>README, if any</del>
+- √ <del>author, if any</del>
 
 ### HTML/CSS
 
-- homepage
-- list
-- details
+- √ <del>homepage</del>
+- √ <del>list</del>
+- √ <del>details</del>
+- √ <del>search</del>
+- √ <del>about</del>
 
 ## Technical
 
@@ -67,7 +56,9 @@ Basically a form which sends me an email.
     - √ <del>`homepage` for homepage URL</del>
     - √ <del>`fork` to see if it's a fork</del>
     - √ <del>`readme` to be fetched using the github api and stored as </del>markdown source
-*
 
+# Future
+
+- add info for ST version compatibility (2, 3, 2+3) [custom]
 
 [Package Control JSON db]: https://raw.github.com/wbond/package_control_channel/master/repositories.json

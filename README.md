@@ -14,12 +14,18 @@ Be sure to create a `data` directory at the root of the project installation:
 
     $ mkdir data
 
+This directory *MUST* be writeable by the system user running the import/sync script.
+
 Import
 ------
 
-An import script is provided to import existing packages living in [Package Control](); you need to set the `GITHUB_API_TOKEN` env var to make it work:
+An import script is provided to import existing packages living in [Package Control](http://wbond.net/sublime_packages/package_control); you need to set the `GITHUB_API_TOKEN` env var to make it work:
 
-    $ GITHUB_API_TOKEN=gsdgg6hg54jh800bjb566 make import.js
+    $ GITHUB_API_TOKEN=gsdgg6hg54jh800bjb566 make import
+
+This script is also used to resync the data:
+
+    $ GITHUB_API_TOKEN=gsdgg6hg54jh800bjb566 make sync
 
 Indexation
 ----------
@@ -45,3 +51,8 @@ Test
 ----
 
     $ make test
+
+License
+-------
+
+[MIT](http://opensource.org/licenses/MIT)
