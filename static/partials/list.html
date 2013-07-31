@@ -26,7 +26,11 @@
       </div>
     </section>
   </li>
-  <li ng-show="!canLoad">loading…</li>
+  <li ng-show="!canLoad">
+    <div class="well well-small"><p>Loading…</p></div>
+  </li>
 </ul>
 
-<p ng-if="packages.length === 0">No result.</p>
+<div ng-if="canLoad && packages.length === 0" class="well well-small">
+  No result.
+</div>
