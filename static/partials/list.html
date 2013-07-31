@@ -1,19 +1,11 @@
 <div class="page-header">
-  <div class="row">
-    <div class="col-lg-6">
-      <h2 ng-if="title">{{ title }}</h2>
-    </div>
-    <div class="col-lg-6 text-right">
-      <div ng-include="'partials/pagination.html'"></div>
-    </div>
-  </div>
+  <h2 ng-if="title">
+    {{ title }}
+    <span ng-show="total" class="badge">{{ total }}</span>
+  </h2>
 </div>
 
-<p ng-if="total" class="text-right">
-  <em>{{ total }} packages.</em>
-</p>
-
-<ul class="pkg-list list-unstyled">
+<ul infinite-scroll="loadPackages(type, next)" threshold="100" can-load="canLoad" class="pkg-list list-unstyled">
   <li ng-repeat="package in packages">
     <section class="package-entry">
       <div class="panel">
@@ -24,16 +16,17 @@
           <div ng-include="'/partials/badges.html'"></div>
           <div class="clearfix"></div>
         </div>
-        <blockquote ng-if="package.description">
+        <blockquote ng-show="package.description">
           <p>{{ package.description }}</p>
         </blockquote>
-        <p ng-if="!package.description">(no description available)</p>
+        <p ng-hide="package.description">(no description available)</p>
         <div class="panel-footer">
           <aside ng-include="'/partials/infos.html'"></aside>
         </div>
       </div>
     </section>
   </li>
+  <li ng-show="!canLoad">loading…</li>
 </ul>
 
 <p ng-if="packages.length === 0">No result.</p>

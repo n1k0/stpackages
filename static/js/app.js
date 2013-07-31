@@ -2,6 +2,7 @@
 
 "use strict";
 
+// Marked setup
 window.onload = function() {
   marked.setOptions({
     gfm: true,
@@ -17,16 +18,26 @@ window.onload = function() {
   });
 };
 
+// Infinite scroll
+angular.module('infiniteScroll', []).directive('infiniteScroll', function($window) {
+  return {
+    link: function(scope, element, attrs) {
+      var offset = ~~attrs.threshold || 0;
+      var canLoad = !!attrs.canLoad;
+      angular.element($window).bind('scroll', function() {
+        var docHeight = document.height || document.body.clientHeight;
+        var bottomReached = window.pageYOffset + window.innerHeight >= docHeight - offset;
+        if (canLoad && bottomReached)
+          scope.$apply(attrs.infiniteScroll);
+      });
+    }
+  };
+});
+
 function md() {
   [].forEach.call(document.querySelectorAll('.md'), function(node) {
     var $node = angular.element(node);
     $node.html(marked.parse($node.text()));
-  });
-}
-
-function range(N) {
-  return Array.apply(0, Array(N)).map(function(x, y) {
-    return y;
   });
 }
 
@@ -38,33 +49,52 @@ function httpError(data, status) {
     console.error("HTTP error: " + data);
 }
 
-function pages(size, offset, total, perPage) {
-  var half = Math.floor(size / 2);
-  var pages = range(Math.ceil(total / perPage)).map(function(x) {
-    return {n: x + 1, offset: x * perPage};
-  });
-  if (pages.length < size)
-    return pages;
-  var current = pages.map(function(page) {
-    return page.offset;
-  }).indexOf(offset);
-  return current < half ? pages.slice(0, size) : pages.slice(current - half, current + half);
+function getPackages($scope, $http, offset, url) {
+  if (!$scope.canLoad || offset + 1 >= $scope.total)
+    return;
+  $scope.canLoad = false;
+  $http.get(url)
+    .success(function(results) {
+      $scope.packages = $scope.packages.concat(results.packages);
+      $scope.total = results.total;
+      $scope.canLoad = true;
+      $scope.next = offset + 12;
+    })
+    .error(httpError);
 }
 
-function pagination(offset, total, perPage) {
-  return {
-    first: 0,
-    last: total - (total % perPage),
-    prev: offset >= perPage ? offset - perPage : null,
-    next: offset < total - perPage ? offset + perPage : null,
-    pages: pages(8, offset, total, perPage)
+function PackageListCtrl($http, $scope, $routeParams) {
+  var titles = {
+    recent: 'Recently created packages',
+    updated: 'Recently updated packages',
+    popular: 'Popular packages'
   };
+
+  $scope.type = $routeParams.type || 'recent';
+  $scope.title = titles[$scope.type];
+  $scope.packages = [];
+  $scope.canLoad = true;
+
+  $scope.loadPackages = function(type, offset) {
+    var url = '/api/' + type + '?offset=' + offset;
+    getPackages($scope, $http, offset, url);
+  };
+
+  $scope.loadPackages($scope.type, 0);
 }
 
-function httpResults($scope, results) {
-  $scope.packages = results.packages;
-  $scope.total = results.total;
-  $scope.pagination = pagination($scope.offset, $scope.total, 12);
+function PackageSearchCtrl($http, $scope, $routeParams) {
+  $scope.type = "" + $routeParams.q;
+  $scope.title = 'Packages matching "' + $scope.type + '"';
+  $scope.packages = [];
+  $scope.canLoad = true;
+
+  $scope.loadPackages = function(type, offset) {
+    var url = '/api/search?q=' + encodeURIComponent(type) + '&offset=' + offset;
+    getPackages($scope, $http, offset, url);
+  };
+
+  $scope.loadPackages($scope.type, 0);
 }
 
 function PackageDetailsCtrl($http, $scope, $routeParams) {
@@ -76,31 +106,6 @@ function PackageDetailsCtrl($http, $scope, $routeParams) {
     .error(httpError);
 }
 
-function PackageListCtrl($http, $scope, $routeParams) {
-  var titles = {
-    recent: 'Recently created packages',
-    updated: 'Recently updated packages',
-    popular: 'Popular packages'
-  };
-  var type = $routeParams.type || 'recent';
-  $scope.listBaseUrl = '/#/' + type;
-  $scope.title = titles[type];
-  $scope.offset = ~~$routeParams.offset;
-  $http.get('/api/' + type + '?offset=' + $scope.offset)
-    .success(httpResults.bind(null, $scope))
-    .error(httpError);
-}
-
-function PackageSearchCtrl($http, $scope, $routeParams) {
-  var q = $routeParams.q;
-  $scope.listBaseUrl = '/#/search/' + encodeURIComponent(q);
-  $scope.title = 'Packages matching "' + q + '"';
-  $scope.offset = ~~$routeParams.offset;
-  $http.get('/api/search?q=' + q + '&offset=' + $scope.offset)
-    .success(httpResults.bind(null, $scope))
-    .error(httpError);
-}
-
 function NavigationCtrl($scope) {
   $scope.$section = "recent";
   $scope.setSection = function(name) {
@@ -108,12 +113,12 @@ function NavigationCtrl($scope) {
   };
   $scope.submit = function() {
     if (this.q)
-      document.location.hash = "/search/" + this.q;
+      document.location.hash = "/search/" + encodeURIComponent(this.q);
   };
 }
 
 angular
-  .module('SublimePackages', [])
+  .module('SublimePackages', ['infiniteScroll'])
   .config(['$routeProvider', function($routeProvider) {
     $routeProvider
       .when('/details/:slug', {
