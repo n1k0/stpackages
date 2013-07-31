@@ -24,7 +24,7 @@ angular.module('infiniteScroll', []).directive('infiniteScroll', function($windo
     link: function(scope, element, attrs) {
       var offset = ~~attrs.threshold || 0;
       var canLoad = !!attrs.canLoad;
-      angular.element($window).bind('scroll', function() {
+      angular.element($window).unbind('scroll').bind('scroll', function() {
         var docHeight = document.height || document.body.clientHeight;
         var bottomReached = window.pageYOffset + window.innerHeight >= docHeight - offset;
         if (canLoad && bottomReached)
@@ -41,6 +41,25 @@ function md() {
   });
 }
 
+var requestCache = {
+  _cache: {},
+  add: function(url, results) {
+    if (!url || !results)
+      return;
+    this._cache[url] = {date: new Date(), results: results};
+  },
+  has: function(url) {
+    return url in this._cache;
+  },
+  get: function(url) {
+    if (this.has(url) && !this.outdated(url))
+      return this._cache[url].results;
+  },
+  outdated: function(url) {
+    return new Date() - this._cache[url].date >= 1 * 60 * 60 * 1000;
+  }
+};
+
 function httpError(data, status) {
   if (status === 0) {
     // XXX display pretty error instead
@@ -50,20 +69,30 @@ function httpError(data, status) {
 }
 
 function getPackages($scope, $http, offset, url) {
+  console.log('getPackages', url);
+  function success(results) {
+    $scope.packages = $scope.packages.concat(results.packages);
+    $scope.total = results.total;
+    $scope.canLoad = true;
+    $scope.next = offset + 12;
+    requestCache.add(url, results);
+  }
+
+  if (requestCache.get(url)) {
+    console.log('has cache for ' + url);
+    return success(requestCache.get(url));
+  }
+
   if (!$scope.canLoad || offset + 1 >= $scope.total)
     return;
+
   $scope.canLoad = false;
-  $http.get(url)
-    .success(function(results) {
-      $scope.packages = $scope.packages.concat(results.packages);
-      $scope.total = results.total;
-      $scope.canLoad = true;
-      $scope.next = offset + 12;
-    })
-    .error(httpError);
+
+  $http.get(url).success(success).error(httpError);
 }
 
 function PackageListCtrl($http, $scope, $routeParams) {
+  console.log('PackageListCtrl called');
   var titles = {
     recent: 'Recently created packages',
     updated: 'Recently updated packages',
