@@ -44,7 +44,7 @@
         <a class="navbar-brand" href="/#/" ng-click="setSection('recent')">Home</a>
         <ul class="nav navbar-nav">
           <li ng-class="{active: $section=='recent'}" ng-click="setSection('recent')">
-            <a href="/#/recent">recent</a>
+            <a href="/#/recent">Recent</a>
           </li>
           <li ng-class="{active: $section=='updated'}" ng-click="setSection('updated')">
             <a href="/#/updated">Updated</a>
@@ -61,20 +61,15 @@
           <button type="submit" class="btn btn-primary">Search</button>
         </form>
         <ul class="nav navbar-nav pull-right">
-          <li><a href="/#/about">About</a></li>
+          <li ng-class="{active: $section=='about'}" ng-click="setSection('about')">
+            <a href="/#/about">About</a>
+          </li>
+          <li><a href="https://github.com/n1k0/stpackages/issues/new">Feedback</a></li>
         </ul>
       </div>
     </div>
 
     <div class="main" ng-view></div>
-
-    <hr>
-
-    <footer class="well well-small text-center">
-      Handcrafted with love by <a href="https://nicolas.perriault.net/">n1k0</a> |
-      <a href="https://github.com/n1k0/stpackages/issues/new">Report an issue</a> |
-      Follow <a href="https://twitter.com/SublimePackages">@SublimePackages</a> on Twitter
-    </footer>
   </div>
 
   <script src="/vendor/marked/marked.js"></script>
