@@ -69,7 +69,6 @@ function httpError(data, status) {
 }
 
 function getPackages($scope, $http, offset, url) {
-  console.log('getPackages', url);
   function success(results) {
     $scope.packages = $scope.packages.concat(results.packages);
     $scope.total = results.total;
@@ -78,10 +77,8 @@ function getPackages($scope, $http, offset, url) {
     requestCache.add(url, results);
   }
 
-  if (requestCache.get(url)) {
-    console.log('has cache for ' + url);
+  if (requestCache.get(url))
     return success(requestCache.get(url));
-  }
 
   if (!$scope.canLoad || offset + 1 >= $scope.total)
     return;
@@ -92,7 +89,6 @@ function getPackages($scope, $http, offset, url) {
 }
 
 function PackageListCtrl($http, $scope, $routeParams) {
-  console.log('PackageListCtrl called');
   var titles = {
     recent: 'Recently created packages',
     updated: 'Recently updated packages',
