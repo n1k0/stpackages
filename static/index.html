@@ -10,6 +10,9 @@
   <script src="/js/app.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+  .navbar li .glyphicon {
+    vertical-align: middle;
+  }
   .badge .glyphicon {
     vertical-align: middle;
     padding-right: 2px;
@@ -44,13 +47,13 @@
         <a class="navbar-brand" href="/#/" ng-click="setSection('recent')">Home</a>
         <ul class="nav navbar-nav">
           <li ng-class="{active: $section=='recent'}" ng-click="setSection('recent')">
-            <a href="/#/recent">Recent</a>
+            <a href="/#/recent"><span class="glyphicon glyphicon-flag"></span> Recent</a>
           </li>
           <li ng-class="{active: $section=='updated'}" ng-click="setSection('updated')">
-            <a href="/#/updated">Updated</a>
+            <a href="/#/updated"><span class="glyphicon glyphicon-time"></span> Updated</a>
           </li>
           <li ng-class="{active: $section=='popular'}" ng-click="setSection('popular')">
-            <a href="/#/popular">Popular</a>
+            <a href="/#/popular"><span class="glyphicon glyphicon-heart"></span> Popular</a>
           </li>
         </ul>
         <form class="pkg-search navbar-form pull-left" ng-submit="submit()">
@@ -62,9 +65,11 @@
         </form>
         <ul class="nav navbar-nav pull-right">
           <li ng-class="{active: $section=='about'}" ng-click="setSection('about')">
-            <a href="/#/about">About</a>
+            <a href="/#/about"><span class="glyphicon glyphicon-info-sign"></span> About</a>
           </li>
-          <li><a href="https://github.com/n1k0/stpackages/issues/new">Feedback</a></li>
+          <li>
+            <a href="https://github.com/n1k0/stpackages/issues/new">
+              <span class="glyphicon glyphicon-comment"></span> Feedback</a></li>
         </ul>
       </div>
     </div>
