@@ -77,7 +77,7 @@ describe("App", function() {
 
         afterEach(function() {
           app.set('per page', perPageBackup);
-        })
+        });
 
         it("should retrieve 1st page", function(done) {
           http.get('/api/recent?offset=0', function(res) {

@@ -1,4 +1,5 @@
 /* global angular, marked, hljs */
+/* exported NavigationCtrl */
 
 "use strict";
 

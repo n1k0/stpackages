@@ -15,16 +15,17 @@ index:
 install:
 	npm install
 
+jshint:
+	@./node_modules/jshint/bin/jshint *.js static test
+
 run:
 	node app.js
 
-sync:
-	make import
-	make index
+sync: import index
 
-test: test-unit
+test: jshint test-unit
 
 test-unit:
 	@NODE_ENV=test ./node_modules/.bin/mocha --reporter $(REPORTER) $(MOCHA_OPTS) test
 
-.PHONY: dev import index install run sync test test-unit
+.PHONY: dev import index install jshint run sync test test-unit

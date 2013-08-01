@@ -119,7 +119,7 @@ describe("Database", function() {
 
       beforeEach(function() {
         query = new db.ArrayQuery(range(10).map(function(x) {
-          return {slug: "p" + ++x};
+          return {slug: "p" + (++x)};
         }));
       });
 
@@ -321,23 +321,17 @@ describe("Database", function() {
             createdAt: "2013-01-0" + x + "T00:00:00Z",
             updatedAt: "2013-01-0" + x + "T00:00:00Z",
             nbStargazers: x,
-            nbIssues: x,
+            nbForks: x,
             nbIssues: x
           };
         }));
       });
 
-      it("should retrieve popular package", function() {
-
-      });
+      it("should retrieve popular package");
     });
 
-    describe("#getRecent", function() {
+    describe("#getRecent");
 
-    });
-
-    describe("#getUpdated", function() {
-
-    });
+    describe("#getUpdated");
   });
 });
