@@ -1,24 +1,24 @@
 {
   "name": "stpackages",
   "description": "App listing Sublime Text packages",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": {
     "name": "Nicolas Perriault",
     "email": "nicolas@perriault.net"
   },
   "dependencies": {
-    "async": "0.2.*",
-    "express": "3.3.4",
-    "request": "2.*",
-    "github": ">= 0.1.10",
+    "async": "0.2.x",
+    "express": "3.3.x",
+    "request": "2.25.x",
+    "github": ">= 0.1.x",
     "search-index": "https://github.com/n1k0/search-index/archive/patch-1.tar.gz"
   },
   "devDependencies": {
-    "nodemon": "*",
-    "mocha": "*",
-    "chai": "*",
-    "sinon": "*",
-    "jshint": "2.*"
+    "nodemon": "0.7.x",
+    "mocha": "1.12.x",
+    "chai": "1.5.x",
+    "sinon": "1.7.x",
+    "jshint": "2.1.x"
   },
   "keywords": [
     "sublimetext",
@@ -26,8 +26,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/n1k0/stpackages"
+    "url": "https://github.com/n1k0/stpackages.git"
   },
+  "keywords": [
+    "app",
+    "webapp",
+    "sublimetext",
+    "directory"
+  ],
   "scripts": {
     "dev": "make dev",
     "import": "make import",
@@ -36,8 +42,9 @@
     "test": "make test",
     "sync": "make sync"
   },
+  "license": "MIT",
   "engines": {
-    "node": "*"
+    "node": ">=0.10.x"
   },
   "readmeFilename": "README.md",
   "bugs": {
