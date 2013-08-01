@@ -5,9 +5,11 @@ dev:
 	nodemon app.js
 
 import:
+	rm -rf data/*.json
 	node import.js
 
 index:
+	rm -rf norchindex/*
 	node index-db.js
 
 install:
@@ -17,7 +19,6 @@ run:
 	node app.js
 
 sync:
-	rm -rf data/*.json
 	make import
 	make index
 
