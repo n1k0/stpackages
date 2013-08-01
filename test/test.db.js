@@ -329,9 +329,5 @@ describe("Database", function() {
 
       it("should retrieve popular package");
     });
-
-    describe("#getRecent");
-
-    describe("#getUpdated");
   });
 });
