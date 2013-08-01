@@ -29,9 +29,12 @@
     "url": "git://github.com/n1k0/stpackages"
   },
   "scripts": {
+    "dev": "make dev",
     "import": "make import",
+    "index": "make index",
     "run": "make run",
-    "test": "make test"
+    "test": "make test",
+    "sync": "make sync"
   },
   "engines": {
     "node": "*"
