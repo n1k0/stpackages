@@ -5,6 +5,17 @@ var sinon = require('sinon');
 var importer = require('../lib/import');
 
 describe("Importer", function() {
+  var sandbox;
+
+  beforeEach(function() {
+    sandbox = sinon.sandbox.create();
+    sandbox.stub(importer.check);
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
   describe("repoType", function() {
     function expectType(url, type) {
       expect(importer.repoType(url)).to.equal(type);
