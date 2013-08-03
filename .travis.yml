@@ -8,6 +8,7 @@ notifications:
     - nperriault@gmail.com
 
 before_script:
+  - mkdir ~/bin
   - export PATH=~/bin:$PATH
   - echo "installing PhantomJS 1.9.1"
   - wget http://phantomjs.googlecode.com/files/phantomjs-1.9.1-linux-x86_64.tar.bz2
