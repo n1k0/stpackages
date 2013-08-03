@@ -5,11 +5,11 @@ dev:
 	nodemon app.js
 
 import:
-	rm -rf data/*.json
+	mv data data.bck
+	mkdir data
 	node import.js
 
 index:
-	rm -rf norchindex/*
 	node index-db.js
 
 install:
