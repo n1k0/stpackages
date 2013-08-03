@@ -13,47 +13,71 @@ app.use(app.router);
 app.set('per page', ~~process.env.MAX_PER_PAGE || 12);
 app.set('json spaces', 2);
 
+var scoreScript = "_score * doc['nbStargazers'].value * doc['nbForks'].value " +
+                  " / (doc['nbIssues'].value + 1) * doc['popularity'].value";
+
 function createQuery(data) {
   return new db.PackageQuery(data || app.get('data'));
 }
 
 app.get('/api/recent', function(req, res) {
-  var offset = ~~(req.query.offset || 0);
-  res.json(createQuery().getRecent(offset, app.get('per page')));
+  /* jshint camelcase:false */
+  libsearch.sendSearchResults(res, {
+    from: ~~(req.query.offset || 0),
+    size: app.get('per page'),
+    sort: [{createdAt: "desc"}],
+    query: {match_all: {}}
+  });
 });
 
 app.get('/api/updated', function(req, res) {
   /* jshint camelcase:false */
-  var offset = ~~(req.query.offset || 0);
-  var client = libsearch.createClient();
-  client.search("stpackages", "package", {
-    from: offset,
+  libsearch.sendSearchResults(res, {
+    from: ~~(req.query.offset || 0),
     size: app.get('per page'),
     sort: [{updatedAt: "desc"}],
     query: {match_all: {}}
-  }).on('data', function(data) {
-    res.json(JSON.parse(data));
-  }).on('error', function(err) {
-    res.json(500, err);
-  }).exec();
+  });
 });
 
 app.get('/api/popular', function(req, res) {
-  var offset = ~~(req.query.offset || 0);
-  res.json(createQuery().getPopular(offset, app.get('per page')));
+  /* jshint camelcase:false */
+  libsearch.sendSearchResults(res, {
+    from: ~~(req.query.offset || 0),
+    size: app.get('per page'),
+    //sort: [{popularity: "desc"}],
+    query: {
+      custom_score: {
+        query: {match_all: {}},
+        script: scoreScript
+      }
+    }
+  });
 });
 
 app.get('/api/search', function(req, res) {
-  require('./lib/search').search(req.query.q, {
-    offset: ~~req.query.offset || 0,
-    perPage: app.get('per page')
-  }, function(err, results, total) {
-    if (err)
-      return res.json(500, err);
-    res.json({
-      packages: results,
-      total: total
-    });
+  /* jshint camelcase:false */
+  libsearch.sendSearchResults(res, {
+    from: ~~(req.query.offset || 0),
+    size: app.get('per page'),
+    query: {
+      custom_score: {
+        query: {
+          query_string : {
+            default_operator: "AND",
+            fields : [
+              "name^20",
+              "description^10",
+              "readme^.25",
+              "author"
+            ],
+            query : req.query.q,
+            use_dis_max : false
+          }
+        },
+        script: scoreScript
+      }
+    }
   });
 });
 
