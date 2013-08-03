@@ -28,4 +28,10 @@ test: jshint test-unit
 test-unit:
 	@NODE_ENV=test ./node_modules/.bin/mocha --reporter $(REPORTER) $(MOCHA_OPTS) test
 
+test-functional:
+	@forever start app.js > /dev/null
+	@sleep 1
+	casperjs test test/casper
+	@forever stopall > /dev/null
+
 .PHONY: dev import index install jshint run sync test test-unit
