@@ -5,8 +5,24 @@ SublimePackages.com
 
 [![Build Status](https://travis-ci.org/n1k0/stpackages.png?branch=master)](https://travis-ci.org/n1k0/stpackages)
 
+Prerequisites
+-------------
+
+The Web application server requires [nodejs] >= 0.10.15. Data persistence is achieved through [ElasticSearch].
+
+By default, the app server will look for an instance running on `localhost:9200`.
+
+To configure the settings and credentials of your ES server, you can set the following environment variables:
+
+- `ELASTICSEARCH_HOST`: The ES server host name
+- `ELASTICSEARCH_PORT`: The ES server port
+- `ELASTICSEARCH_USERNAME`: The ES server username (optional)
+- `ELASTICSEARCH_PASSWORD`: The ES server password (optional)
+
 Installation
 ------------
+
+NodeJS dependencies will be installed running the command below:
 
     $ make install
 
@@ -43,7 +59,7 @@ This script is also used to resync the data:
 
 ## Indexation
 
-Then data should be indexed for the search engine to work:
+Then data should be indexed for the Web application to work properly:
 
     $ make index
 
@@ -77,6 +93,7 @@ License
 
 
 
+[ElasticSearch]: http://elasticsearch.org/
 [forever]: http://npmjs.org/package/forever
 [Github API]: http://developer.github.com/
 [MIT]: http://opensource.org/licenses/MIT
