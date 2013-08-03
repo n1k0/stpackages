@@ -2,6 +2,7 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var db = require('./lib/db');
+var libsearch = require('./lib/search');
 var app = express();
 
 var dataDir = path.join(__dirname, 'data');
@@ -22,8 +23,19 @@ app.get('/api/recent', function(req, res) {
 });
 
 app.get('/api/updated', function(req, res) {
+  /* jshint camelcase:false */
   var offset = ~~(req.query.offset || 0);
-  res.json(createQuery().getUpdated(offset, app.get('per page')));
+  var client = libsearch.createClient();
+  client.search("stpackages", "package", {
+    from: offset,
+    size: app.get('per page'),
+    sort: [{updatedAt: "desc"}],
+    query: {match_all: {}}
+  }).on('data', function(data) {
+    res.json(JSON.parse(data));
+  }).on('error', function(err) {
+    res.json(500, err);
+  }).exec();
 });
 
 app.get('/api/popular', function(req, res) {
