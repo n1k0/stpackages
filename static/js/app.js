@@ -64,9 +64,9 @@ var requestCache = {
 function httpError(data, status) {
   if (status === 0) {
     // XXX display pretty error instead
-    console.error("HTTP " + status + "error: no route to host. Are you offline?");
+    console.error("HTTP " + status + "error: no route to host. Are you offline?", data);
   } else
-    console.error("HTTP error: " + data);
+    console.error("HTTP error", data);
 }
 
 function getPackages($scope, $http, offset, url) {
