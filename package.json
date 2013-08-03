@@ -10,6 +10,7 @@
     "async": "0.2.x",
     "express": "3.3.x",
     "request": "2.25.x",
+    "forever": "0.10.x",
     "github": ">= 0.1.x",
     "search-index": "https://github.com/n1k0/search-index/archive/patch-1.tar.gz"
   },

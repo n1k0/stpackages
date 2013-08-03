@@ -7,6 +7,19 @@ notifications:
   email:
     - nperriault@gmail.com
 
-before_script: "npm install --dev"
+before_script:
+  - mkdir ~/bin
+  - export PATH=~/bin:$PATH
+  - echo "installing PhantomJS 1.9.1"
+  - wget http://phantomjs.googlecode.com/files/phantomjs-1.9.1-linux-x86_64.tar.bz2
+  - tar -xvf phantomjs-1.9.1-linux-x86_64.tar.bz2
+  - sudo mv phantomjs-1.9.1-linux-x86_64/bin/phantomjs ~/bin/phantomjs
+  - phantomjs --version
+  - ls -la ~/bin/phantomjs
+  - echo "installing CasperJS latest master"
+  - git clone https://github.com/n1k0/casperjs.git ~/casperjs
+  - ln -sf ~/casperjs/bin/casperjs ~/bin/casperjs
+  - casperjs --version
+  - npm install --dev
 
 script: "npm test"
