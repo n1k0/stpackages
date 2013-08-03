@@ -23,7 +23,7 @@ run:
 
 sync: import index
 
-test: jshint test-unit
+test: jshint test-unit test-functional
 
 test-unit:
 	@NODE_ENV=test ./node_modules/.bin/mocha --reporter $(REPORTER) $(MOCHA_OPTS) test
