@@ -10,13 +10,7 @@
 
 <h3>How does it work?</h3>
 
-<p>The app backend is regularly fetching packages information using the <a href="https://raw.github.com/wbond/package_control_channel/master/repositories.json">Package Control repository JSON database</a> on Github, and stores the data in JSON files on the server filesystem — one single JSON file per package repository.</p>
-
-<p>When the WebServer starts, it loads the whole database into memory so there's no file lookup when users request pages.</p>
-
-<p>The memory footprint of this storage strategy remains relatively low, because there are not so many packages out there (well, if a bit more than a thousand can be considered <em>not so many</em>). Serving data directly from memory has proven to be one of the fastest possible way ever.</p>
-
-<p>The whole application, including the HTML/CSS stuff, has been developped in 4 full days of work. It's been pretty much a fun ride.</p>
+<p>The app backend is regularly fetching packages information using the <a href="https://raw.github.com/wbond/package_control_channel/master/repositories.json">Package Control repository JSON database</a> on Github, and index the data in an <a href="http://elasticsearch.org/">ElasticSearch</a> index.</p>
 
 <p>Of course, there are many possible evolutions to be expected, but I really wanted a Viable Product as Minimal as possible :)</p>
 
@@ -60,8 +54,8 @@
     to consume the <a href="https://github.com/">Github</a> API
   </li>
   <li>
-    <a href="https://npmjs.org/package/search">search-index</a>
-    to build a custom searchable index used by the search engine
+    <a href="https://npmjs.org/package/elasticsearchclient">elasticsearchclient</a>
+    to query the <a href="http://elasticsearch.org/">ElasticSearch</a> index from Node.
   </li>
 </ul>
 
