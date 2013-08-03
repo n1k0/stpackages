@@ -43,7 +43,7 @@ app.get('/api/details/:slug', function(req, res) {
 
 app.start = function() {
   this._server = http.createServer(this);
-  this._server.listen(process.env.NODE_PORT || 3000);
+  this._server.listen(process.env.PORT || 5000);
 };
 
 app.close = function(cb) {

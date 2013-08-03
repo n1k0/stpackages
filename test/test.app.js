@@ -10,7 +10,7 @@ describe("App", function() {
 
     // var http = {
     //   get: function(path, cb) {
-    //     var url = 'http://0.0.0.0:3000' + path;
+    //     var url = 'http://0.0.0.0:5000' + path;
     //     request.get(url, {}, function(err, res, body) {
     //       if (err)
     //         throw new Error('Unable to GET ' + url + ': ' + err.message);
