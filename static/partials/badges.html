@@ -1,4 +1,20 @@
 <ul class="list-inline pull-right">
+  <li ng-show="package.st3compat && package.st3compat!='Unknown'">
+    <a href="https://github.com/wbond/sublime_package_control/wiki/Sublime-Text-3-Compatible-Packages"
+       title="{{ package.st3compat }}">
+      <span class="badge">
+        <span ng-show="package.st3compat=='Working'"
+              class="glyphicon glyphicon-ok"></span>
+        <span ng-show="package.st3compat=='Needs Extra Steps'"
+              class="glyphicon glyphicon-exclamation-sign"></span>
+        <span ng-show="package.st3compat=='Not Working'"
+              class="glyphicon glyphicon-remove"></span>
+        <span ng-show="!package.st3compat || package.st3compat=='Unknown'"
+              class="glyphicon glyphicon-question-sign"></span>
+        ST3
+      </span>
+    </a>
+  </li>
   <li>
     <a href="{{ package.url }}/stargazers" title="stargazers">
       <span class="badge">
