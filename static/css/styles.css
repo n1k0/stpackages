@@ -58,3 +58,23 @@
 .pkg-article .pkg-badges {
   margin-top: 2em;
 }
+
+.pkg-readme h1 {font-size: 2em;}
+.pkg-readme h2 {font-size: 1.8em;}
+.pkg-readme h3 {font-size: 1.6em;}
+.pkg-readme h4 {font-size: 1.4em;}
+.pkg-readme h5 {font-size: 1.2em;}
+
+.pkg-readme pre {
+  padding: .2em;
+}
+
+.pkg-readme code {
+  color: #333;
+}
+
+.pkg-readme pre code {
+  background: none;
+  font-family: Consolas, "SourceCode Pro", Monaco, monospace;
+  font-size: 1em;
+}

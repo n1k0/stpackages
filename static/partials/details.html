@@ -11,7 +11,7 @@
     <blockquote ng-if="package.description" class="pkg-description">
       <p>{{ package.description }}</p>
     </blockquote>
-    <div class="panel">
+    <div class="panel" ng-show="package.readme">
       <div class="panel-heading">
         <h3 class="panel-title">README</h3>
       </div>
