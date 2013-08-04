@@ -1,7 +1,12 @@
 <div class="pkg-details">
   <article class="pkg-article">
-    <div class="page-header">
-      <h2><a href="/#/details/{{ package.slug }}">{{ package.name }}</a></h2>
+    <div class="row page-header">
+      <div class="col-lg-6">
+        <h2><a href="/#/details/{{ package.slug }}">{{ package.name }}</a></h2>
+      </div>
+      <div class="col-lg-6">
+        <div ng-include="'/partials/badges.html'"></div>
+      </div>
     </div>
     <blockquote ng-if="package.description" class="pkg-description">
       <p>{{ package.description }}</p>

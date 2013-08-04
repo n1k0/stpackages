@@ -29,9 +29,6 @@
   .navbar-form {
     margin: 0 0 -5px 0;
   }
-
-  .navbar .navbar-nav {
-  }
 }
 
 .navbar li .glyphicon {
@@ -53,7 +50,11 @@
   margin-bottom: 0;
 }
 
-.pkg-search.navbar-form {
+.pkg-search {
   margin-bottom: 0;
   margin-left: 10px;
+}
+
+.pkg-article .pkg-badges {
+  margin-top: 2em;
 }
