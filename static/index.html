@@ -26,19 +26,19 @@
       <div class="container">
         <a class="navbar-brand" href="/#/" ng-click="setSection('recent')">Home</a>
         <ul class="nav navbar-nav">
-          <li ng-class="{active: $section=='recent'}" ng-click="setSection('recent')">
+          <li ng-class="{active: section=='recent'}" ng-click="setSection('recent')">
             <a href="/#/recent">
               <span class="glyphicon glyphicon-flag"></span>
               <span class="nav-entry-label">Recent</span>
             </a>
           </li>
-          <li ng-class="{active: $section=='updated'}" ng-click="setSection('updated')">
+          <li ng-class="{active: section=='updated'}" ng-click="setSection('updated')">
             <a href="/#/updated">
               <span class="glyphicon glyphicon-time"></span>
               <span class="nav-entry-label">Updated</span>
             </a>
           </li>
-          <li ng-class="{active: $section=='popular'}" ng-click="setSection('popular')">
+          <li ng-class="{active: section=='popular'}" ng-click="setSection('popular')">
             <a href="/#/popular">
               <span class="glyphicon glyphicon-heart"></span>
               <span class="nav-entry-label">Popular</span>
@@ -53,7 +53,7 @@
           <button type="submit" class="btn btn-primary">Search</button>
         </form>
         <ul class="nav navbar-nav pull-right">
-          <li ng-class="{active: $section=='about'}" ng-click="setSection('about')">
+          <li ng-class="{active: section=='about'}" ng-click="setSection('about')">
             <a href="/#/about">
               <span class="glyphicon glyphicon-info-sign"></span>
               <span class="nav-entry-label">About</span>

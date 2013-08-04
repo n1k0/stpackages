@@ -3,6 +3,10 @@
 
 "use strict";
 
+function isArray(o) {
+  return Object.prototype.toString.call(o) === '[object Array]';
+}
+
 // Marked setup
 window.onload = function() {
   marked.setOptions({
@@ -69,24 +73,105 @@ function httpError(data, status) {
     console.error("HTTP error", status, data);
 }
 
-function getPackages($scope, $http, offset, url) {
-  function success(results) {
-    $scope.packages = $scope.packages.concat(results.packages);
-    $scope.total = results.total;
-    $scope.canLoad = true;
-    $scope.next = offset + 12;
-    requestCache.add(url, results);
-  }
+function buildUrl(baseUrl, params) {
+  var url = baseUrl;
+  params = params || {};
+  if (url.indexOf('?') === -1)
+    url += "?";
+  if (url.lastIndexOf('&') !== url.length - 1)
+    url += "&";
+  url += Object.keys(params).map(function(name) {
+    if (isArray(params[name])) {
+      return params[name].map(function(value) {
+        return [name + '[]', value].join('=');
+      }).join('&');
+    }
+    if (typeof params[name] === "object") {
+      return Object.keys(params[name]).map(function(field) {
+        return [name + '[' + field + ']', params[name][field]].join('=');
+      }).join('&');
+    }
+    return [name, params[name]].join('=');
+  }).join('&');
+  return url.replace('?&', '?').replace(/\?$/, '').replace(/&$/, '');
+}
 
-  if (requestCache.get(url))
-    return success(requestCache.get(url));
+function initListScope($scope, $http) {
+  /*jshint validthis:true, camelcase:false */
+  $scope.canLoad = true;
+  $scope.packages = [];
+  $scope.filters = {};
+  $scope.filterNames = {
+    st3compat: {
+      title: "ST3 compatibility",
+      values: {
+        unknown: "Unknown",
+        working: "Working",
+        extra_steps: "Extra Steps Needed",
+        errors: "Not working"
+      }
+    },
+    platforms: {
+      title: "Platform support",
+      values: {
+        linux: "Linux",
+        osx: "Mac OS X",
+        windows: "Windows"
+      }
+    }
+  };
 
-  if (!$scope.canLoad || offset + 1 >= $scope.total)
-    return;
+  $scope.fetchPackages = function(params) {
+    params = params || {};
 
-  $scope.canLoad = false;
+    if (!$scope.canLoad || ($scope.total > 0 && ~~params.offset + 1 >= $scope.total))
+      return;
 
-  $http.get(url).success(success).error(httpError);
+    var url = buildUrl($scope.baseUrl, params);
+
+    if (~~params.offset === 0)
+      $scope.packages = [];
+
+    function success(results) {
+      $scope.packages = $scope.packages.concat(results.packages);
+      $scope.facets = results.facets;
+      $scope.total = results.total;
+      $scope.canLoad = true;
+      $scope.next = ~~params.offset + 12;
+      requestCache.add(url, results);
+    }
+
+    if (requestCache.get(url))
+      return success(requestCache.get(url));
+
+    $scope.canLoad = false;
+
+    $http.get(url).success(success).error(httpError);
+  };
+
+  $scope.loadPackages = function(offset) {
+    this.fetchPackages({
+      offset: offset,
+      filters: this.filters
+    });
+  };
+
+  $scope.refine = function(field, value) {
+    this.filters[field] = value;
+    this.fetchPackages({
+      offset: 0,
+      filters: this.filters
+    });
+  };
+
+  $scope.resetFilter = function(field) {
+    if (field in this.filters)
+      delete this.filters[field];
+    this.fetchPackages({
+      offset: 0,
+      filters: this.filters // keeping other filters previously set
+    });
+  };
 }
 
 function PackageListCtrl($http, $scope, $routeParams) {
@@ -97,30 +182,22 @@ function PackageListCtrl($http, $scope, $routeParams) {
   };
 
   $scope.type = $routeParams.type || 'recent';
+  $scope.baseUrl = '/api/' + $scope.type;
   $scope.title = titles[$scope.type];
-  $scope.packages = [];
-  $scope.canLoad = true;
 
-  $scope.loadPackages = function(type, offset) {
-    var url = '/api/' + type + '?offset=' + offset;
-    getPackages($scope, $http, offset, url);
-  };
+  initListScope($scope, $http);
 
-  $scope.loadPackages($scope.type, 0);
+  $scope.loadPackages(0);
 }
 
 function PackageSearchCtrl($http, $scope, $routeParams) {
   $scope.type = "" + $routeParams.q;
+  $scope.baseUrl = '/api/search?q=' + encodeURIComponent($scope.type);
   $scope.title = 'Packages matching "' + $scope.type + '"';
-  $scope.packages = [];
-  $scope.canLoad = true;
 
-  $scope.loadPackages = function(type, offset) {
-    var url = '/api/search?q=' + encodeURIComponent(type) + '&offset=' + offset;
-    getPackages($scope, $http, offset, url);
-  };
+  initListScope($scope, $http);
 
-  $scope.loadPackages($scope.type, 0);
+  $scope.loadPackages(0);
 }
 
 function PackageDetailsCtrl($http, $scope, $routeParams) {
@@ -133,9 +210,13 @@ function PackageDetailsCtrl($http, $scope, $routeParams) {
 }
 
 function NavigationCtrl($scope) {
-  $scope.$section = "recent";
+  try {
+    $scope.section = document.location.hash.slice(2);
+  } catch (err) {
+    $scope.section = "recent";
+  }
   $scope.setSection = function(name) {
-    $scope.$section = name;
+    $scope.section = name;
   };
   $scope.submit = function() {
     if (this.q)

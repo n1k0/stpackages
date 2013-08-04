@@ -40,6 +40,18 @@
   padding-right: 2px;
 }
 
+.badge.st3ok {
+  background: green;
+}
+
+.badge.st3extra {
+  background: orange;
+}
+
+.badge.st3ko {
+  background: red;
+}
+
 .pkg-list li .panel-title a {
   color: #333;
 }

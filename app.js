@@ -11,29 +11,33 @@ app.set('json spaces', 2);
 
 app.get('/api/recent', function(req, res) {
   libsearch.recentPackages(res, {
-    offset: ~~(req.query.offset || 0),
-    perPage: app.get('per page')
+    offset: ~~req.query.offset,
+    perPage: app.get('per page'),
+    filters: req.query.filters
   });
 });
 
 app.get('/api/updated', function(req, res) {
   libsearch.updatedPackages(res, {
-    offset: ~~(req.query.offset || 0),
-    perPage: app.get('per page')
+    offset: ~~req.query.offset,
+    perPage: app.get('per page'),
+    filters: req.query.filters
   });
 });
 
 app.get('/api/popular', function(req, res) {
   libsearch.popularPackages(res, {
-    offset: ~~(req.query.offset || 0),
-    perPage: app.get('per page')
+    offset: ~~req.query.offset,
+    perPage: app.get('per page'),
+    filters: req.query.filters
   });
 });
 
 app.get('/api/search', function(req, res) {
   libsearch.searchPackages(res, req.query.q, {
-    offset: ~~(req.query.offset || 0),
-    perPage: app.get('per page')
+    offset: ~~req.query.offset,
+    perPage: app.get('per page'),
+    filters: req.query.filters
   });
 });
 

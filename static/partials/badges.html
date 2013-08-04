@@ -1,15 +1,15 @@
 <ul class="pkg-badges list-inline pull-right">
-  <li ng-show="package.st3compat && package.st3compat!='Unknown'">
+  <li ng-show="package.st3compat">
     <a href="https://github.com/wbond/sublime_package_control/wiki/Sublime-Text-3-Compatible-Packages"
        title="{{ package.st3compat }}">
-      <span class="badge">
-        <span ng-show="package.st3compat=='Working'"
+      <span class="badge" ng-class="{st3ok: package.st3compat=='working', st3ko: package.st3compat=='errors', st3extra: package.st3compat=='extra_steps'}">
+        <span ng-show="package.st3compat=='working'"
               class="glyphicon glyphicon-ok"></span>
-        <span ng-show="package.st3compat=='Needs Extra Steps'"
+        <span ng-show="package.st3compat=='extra_steps'"
               class="glyphicon glyphicon-exclamation-sign"></span>
-        <span ng-show="package.st3compat=='Not Working'"
+        <span ng-show="package.st3compat=='errors'"
               class="glyphicon glyphicon-remove"></span>
-        <span ng-show="!package.st3compat || package.st3compat=='Unknown'"
+        <span ng-show="!package.st3compat || package.st3compat=='unknown'"
               class="glyphicon glyphicon-question-sign"></span>
         ST3
       </span>
@@ -38,5 +38,13 @@
         {{ package.nbIssues }}
       </span>
     </a>
+  </li>
+  <li ng-show="package.platforms">
+    <span class="badge">
+      <span class="glyphicon glyphicon-thumbs-up"></span>
+      <span ng-show="package.platforms.indexOf('linux')!=-1">Linux</span>
+      <span ng-show="package.platforms.indexOf('osx')!=-1">OSX</span>
+      <span ng-show="package.platforms.indexOf('windows')!=-1">Win</span>
+    </span>
   </li>
 </ul>
