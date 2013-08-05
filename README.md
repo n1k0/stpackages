@@ -3,7 +3,7 @@ SublimePackages.com
 
 [SublimePackages] is a [nodejs] Web application listing sublime text packages.
 
-[![Build Status](https://travis-ci.org/n1k0/stpackages.png?branch=master)](https://travis-ci.org/n1k0/stpackages)
+[![Build Status](https://travis-ci.org/n1k0/stpackages.png?branch=master)](https://travis-ci.org/n1k0/stpackages) ![Dependencies Status](https://david-dm.org/n1k0/stpackages.png)
 
 Prerequisites
 -------------
