@@ -52,6 +52,18 @@
   background: red;
 }
 
+.main .page-header {
+  margin-top: 20px;
+}
+
+.nb-packages {
+  margin-top: 23px;
+}
+
+.nb-packages .label {
+  background: rgb(66, 139, 202);
+}
+
 .pkg-list li .panel-title a {
   color: #333;
 }

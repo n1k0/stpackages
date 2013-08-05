@@ -1,7 +1,7 @@
 <ul class="pkg-badges list-inline pull-right">
   <li ng-show="package.st3compat">
     <a href="https://github.com/wbond/sublime_package_control/wiki/Sublime-Text-3-Compatible-Packages"
-       title="{{ package.st3compat }}">
+       title="ST3 support: {{ package.st3compat }}">
       <span class="badge" ng-class="{st3ok: package.st3compat=='working', st3ko: package.st3compat=='errors', st3extra: package.st3compat=='extra_steps'}">
         <span ng-show="package.st3compat=='working'"
               class="glyphicon glyphicon-ok"></span>
@@ -16,7 +16,7 @@
     </a>
   </li>
   <li>
-    <a href="{{ package.url }}/stargazers" title="stargazers">
+    <a href="{{ package.url }}/stargazers" title="{{ package.nbStargazers }} stargazers">
       <span class="badge">
         <span class="glyphicon glyphicon-star"></span>
         {{ package.nbStargazers }}
@@ -24,7 +24,7 @@
     </a>
   </li>
   <li>
-    <a href="{{ package.url }}/network/members" title="forks">
+    <a href="{{ package.url }}/network/members" title="{{ package.nbForks }} forks">
       <span class="badge">
         <span class="glyphicon glyphicon-random"></span>
         {{ package.nbForks }}
@@ -32,7 +32,7 @@
     </a>
   </li>
   <li>
-    <a href="{{ package.url }}/issues" title="issues">
+    <a href="{{ package.url }}/issues" title="{{ package.nbIssues }} issues">
       <span class="badge">
         <span class="glyphicon glyphicon-exclamation-sign"></span>
         {{ package.nbIssues }}
@@ -46,5 +46,12 @@
       <span ng-show="package.platforms.indexOf('osx')!=-1">OSX</span>
       <span ng-show="package.platforms.indexOf('windows')!=-1">Win</span>
     </span>
+  </li>
+  <li>
+    <a href="{{ package.homepage || package.url }}" title="Homepage">
+      <span class="badge">
+        <span class="glyphicon glyphicon-home"></span>
+      </span>
+    </a>
   </li>
 </ul>

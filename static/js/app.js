@@ -23,7 +23,26 @@ window.onload = function() {
   });
 };
 
-// Infinite scroll
+function md() {
+  [].forEach.call(document.querySelectorAll('.md'), function(node) {
+    var $node = angular.element(node);
+    $node.html(marked.parse($node.text()));
+  });
+}
+
+function httpError(data, status) {
+  if (status === 0) {
+    // XXX display pretty error instead
+    console.error("HTTP error: no route to host. Are you offline?", data);
+  } else
+    console.error("HTTP error", status, data);
+}
+
+var app = angular.module('SublimePackages', ['infiniteScroll']);
+
+/**
+ * Infinite scroll directive
+ */
 angular.module('infiniteScroll', []).directive('infiniteScroll', function($window) {
   return {
     link: function(scope, element, attrs) {
@@ -39,69 +58,125 @@ angular.module('infiniteScroll', []).directive('infiniteScroll', function($windo
   };
 });
 
-function md() {
-  [].forEach.call(document.querySelectorAll('.md'), function(node) {
-    var $node = angular.element(node);
-    $node.html(marked.parse($node.text()));
-  });
-}
+/**
+ * Request cache factory
+ */
+app.factory('$requestCache', function() {
+  return {
+    _cache: {},
+    add: function(url, results) {
+      if (!url || !results)
+        return;
+      this._cache[url] = {date: new Date(), results: results};
+    },
+    has: function(url) {
+      return url in this._cache;
+    },
+    get: function(url) {
+      if (this.has(url) && !this.outdated(url))
+        return this._cache[url].results;
+    },
+    outdated: function(url) {
+      return new Date() - this._cache[url].date >= 1 * 60 * 60 * 1000;
+    }
+  };
+});
 
-var requestCache = {
-  _cache: {},
-  add: function(url, results) {
-    if (!url || !results)
-      return;
-    this._cache[url] = {date: new Date(), results: results};
-  },
-  has: function(url) {
-    return url in this._cache;
-  },
-  get: function(url) {
-    if (this.has(url) && !this.outdated(url))
-      return this._cache[url].results;
-  },
-  outdated: function(url) {
-    return new Date() - this._cache[url].date >= 1 * 60 * 60 * 1000;
+/**
+ * Api service factory.
+ */
+app.factory('$api', function($http, $requestCache) {
+  function buildUrl(baseUrl, params) {
+    var url = baseUrl.replace(/(\?|&)$/, '');
+    params = params || {};
+    if (!Object.keys(params).length)
+      return url;
+    if (url.indexOf('?') === -1)
+      url += "?";
+    else if(url.lastIndexOf('&') !== url.length - 1)
+      url += "&";
+    url += Object.keys(params).map(function(name) {
+      var param = params[name];
+      if (isArray(param)) {
+        return param.map(function(value) {
+          return [name + '[]', value].join('=');
+        }).join('&');
+      }
+      if (typeof param === "object") {
+        return Object.keys(param).map(function(field) {
+          return [name + '[' + field + ']', param[field]].join('=');
+        }).join('&');
+      }
+      return [name, param].join('=');
+    }).filter(function(str) {
+      return !!str;
+    }).join('&');
+    return url.replace('?&', '?');
   }
-};
 
-function httpError(data, status) {
-  if (status === 0) {
-    // XXX display pretty error instead
-    console.error("HTTP error: no route to host. Are you offline?", data);
-  } else
-    console.error("HTTP error", status, data);
-}
+  return {
+    init: function(baseUrl, onResults) {
+      this.baseUrl = baseUrl;
+      this.canLoad = true;
+      this.offset = 0;
+      this.total = 0;
+      this.filters = {};
+      this.onResults = onResults;
+      return this;
+    },
 
-function buildUrl(baseUrl, params) {
-  var url = baseUrl;
-  params = params || {};
-  if (url.indexOf('?') === -1)
-    url += "?";
-  if (url.lastIndexOf('&') !== url.length - 1)
-    url += "&";
-  url += Object.keys(params).map(function(name) {
-    if (isArray(params[name])) {
-      return params[name].map(function(value) {
-        return [name + '[]', value].join('=');
-      }).join('&');
+    loadNext: function() {
+      var self = this; // XXX circumvent this with bind()
+
+      if (!this.canLoad || (this.total > 0 && this.offset + 1 >= this.total))
+        return;
+
+      var url = buildUrl(this.baseUrl, {
+        offset: ~~this.offset,
+        filters: this.filters || {}
+      });
+
+      function success(results) {
+        self.total = results.total;
+        self.canLoad = true;
+        $requestCache.add(url, results);
+        self.onResults({
+          offset: self.offset,
+          filters: self.filters,
+          packages: results.packages,
+          total: results.total,
+          facets: results.facets
+        });
+        self.offset += 12;
+      }
+
+      if ($requestCache.get(url))
+        return success($requestCache.get(url));
+
+      this.canLoad = false;
+
+      $http.get(url).success(success).error(httpError);
+      return this;
+    },
+
+    refine: function(field, value) {
+      this.offset = 0;
+      this.filters[field] = value;
+      return this.loadNext();
+    },
+
+    resetFilter: function(field) {
+      this.offset = 0;
+      if (field in this.filters)
+        delete this.filters[field];
+      return this.loadNext();
     }
-    if (typeof params[name] === "object") {
-      return Object.keys(params[name]).map(function(field) {
-        return [name + '[' + field + ']', params[name][field]].join('=');
-      }).join('&');
-    }
-    return [name, params[name]].join('=');
-  }).join('&');
-  return url.replace('?&', '?').replace(/\?$/, '').replace(/&$/, '');
-}
+  };
+});
 
-function initListScope($scope, $http) {
-  /*jshint validthis:true, camelcase:false */
-  $scope.canLoad = true;
-  $scope.packages = [];
-  $scope.filters = {};
-  $scope.filterNames = {
+app.filter('facetLabel', function() {
+  /* jshint camelcase:false */
+  var labels = { // XXX move to a filter
     st3compat: {
       title: "ST3 compatibility",
       values: {
@@ -120,88 +195,59 @@ function initListScope($scope, $http) {
       }
     }
   };
-
-  $scope.fetchPackages = function(params) {
-    params = params || {};
-
-    if (!$scope.canLoad || ($scope.total > 0 && ~~params.offset + 1 >= $scope.total))
-      return;
-
-    var url = buildUrl($scope.baseUrl, params);
-
-    if (~~params.offset === 0)
-      $scope.packages = [];
-
-    function success(results) {
-      $scope.packages = $scope.packages.concat(results.packages);
-      $scope.facets = results.facets;
-      $scope.total = results.total;
-      $scope.canLoad = true;
-      $scope.next = ~~params.offset + 12;
-      requestCache.add(url, results);
+  return function(facet, value) {
+    if (value) {
+      try {
+        return labels[facet.field].values[value] || value;
+      } catch (err) {
+        return value;
+      }
     }
-
-    if (requestCache.get(url))
-      return success(requestCache.get(url));
-
-    $scope.canLoad = false;
-
-    $http.get(url).success(success).error(httpError);
+    try {
+      return labels[facet.field].title || facet.field;
+    } catch (err) {
+      return facet.field;
+    }
   };
-
-  $scope.loadPackages = function(offset) {
-    this.fetchPackages({
-      offset: offset,
-      filters: this.filters
-    });
-  };
-
-  $scope.refine = function(field, value) {
-    this.filters[field] = value;
-    this.fetchPackages({
-      offset: 0,
-      filters: this.filters
-    });
-  };
-
-  $scope.resetFilter = function(field) {
-    if (field in this.filters)
-      delete this.filters[field];
-    this.fetchPackages({
-      offset: 0,
-      filters: this.filters // keeping other filters previously set
-    });
-  };
-}
-
-var app = angular.module('SublimePackages', ['infiniteScroll']);
-
-app.controller('PackageListCtrl', function($http, $scope, $routeParams) {
-  var titles = {
-    recent: 'Recently created packages',
-    updated: 'Recently updated packages',
-    popular: 'Popular packages'
-  };
-
-  $scope.type = $routeParams.type || 'recent';
-  $scope.baseUrl = '/api/' + $scope.type;
-  $scope.title = titles[$scope.type];
-
-  initListScope($scope, $http);
-
-  $scope.loadPackages(0);
 });
 
-app.controller('PackageSearchCtrl', function($http, $scope, $routeParams) {
-  $scope.type = "" + $routeParams.q;
-  $scope.baseUrl = '/api/search?q=' + encodeURIComponent($scope.type);
-  $scope.title = 'Packages matching "' + $scope.type + '"';
+/**
+ * Package list controller.
+ */
+app.controller('PackageListCtrl', function($scope, $routeParams, $api) {
+  var baseUrl;
+  $scope.packages = [];
+  $scope.facets = [];
+  $scope.filters = {};
+  $scope.total = 0;
 
-  initListScope($scope, $http);
+  if ('type' in $routeParams) {
+    var type = $routeParams.type || 'recent';
+    $scope.title = {
+      recent: 'Recently created packages',
+      updated: 'Recently updated packages',
+      popular: 'Popular packages'
+    }[type];
+    baseUrl = '/api/' + type;
+  } else if ('q' in $routeParams) {
+    var q = "" + $routeParams.q;
+    $scope.title = 'Packages matching "' + q + '"';
+    baseUrl = '/api/search?q=' + encodeURIComponent(q);
+  } else {
+    throw new Error("Unsupported route parameters.");
+  }
 
-  $scope.loadPackages(0);
+  $scope.$api = $api.init(baseUrl, function(results) {
+    $scope.packages = (results.offset > 0 ? $scope.packages : []).concat(results.packages);
+    $scope.facets = results.facets;
+    $scope.filters = results.filters;
+    $scope.total = results.total;
+  }).loadNext();
 });
 
+/**
+ * Package details controller.
+ */
 app.controller('PackageDetailsCtrl', function($http, $scope, $routeParams) {
   $http.get('/api/details/' + $routeParams.slug)
     .success(function(pkg) {
@@ -211,6 +257,9 @@ app.controller('PackageDetailsCtrl', function($http, $scope, $routeParams) {
     .error(httpError);
 });
 
+/**
+ * Navigation controller.
+ */
 app.controller('NavigationCtrl', function($scope) {
   try {
     $scope.section = document.location.hash.slice(2);
@@ -226,18 +275,21 @@ app.controller('NavigationCtrl', function($scope) {
   };
 });
 
+/**
+ * Routing configuration.
+ */
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider
+    .when('/about', {
+      templateUrl: '/partials/about.html'
+    })
     .when('/details/:slug', {
       templateUrl: '/partials/details.html',
       controller: 'PackageDetailsCtrl'
     })
     .when('/search/:q', {
       templateUrl: '/partials/list.html',
-      controller: 'PackageSearchCtrl'
-    })
-    .when('/about', {
-      templateUrl: '/partials/about.html'
+      controller: 'PackageListCtrl'
     })
     .when('/:type', {
       templateUrl: '/partials/list.html',

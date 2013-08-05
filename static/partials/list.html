@@ -1,23 +1,23 @@
-<div class="page-header">
-  <h2 ng-if="title">
-    {{ title }}
-    <span ng-show="total" class="label">{{ total }}</span>
-  </h2>
+<div class="page-header row">
+  <h2 class="page-title col-lg-8">{{ title }}</h2>
+  <div class="col-lg-4 nb-packages">
+    <p class="lead pull-right"><span class="label">{{ total }} packages</span></p>
+  </div>
 </div>
 
 <div class="row">
   <div class="col-lg-3 col-lg-pull-9">
     <div class="panel" ng-repeat="facet in facets">
       <div class="panel-heading">
-        <h3 class="panel-title">{{ filterNames[facet.field].title || facet.field }}</h3>
+        <h3 class="panel-title">{{ facet | facetLabel }}</h3>
       </div>
       <ul class="nav nav-pills nav-stacked">
         <li ng-class="{active: !filters[facet.field]}">
-          <a ng-click="resetFilter(facet.field)" href="javascript:void(0)">All</a>
+          <a ng-click="$api.resetFilter(facet.field)" href="javascript:void(0)">All</a>
         </li>
         <li ng-repeat="term in facet.terms" ng-class="{active: term.term==filters[facet.field]}">
-          <a ng-click="refine(facet.field, term.term)" href="javascript:void(0)">
-            {{ filterNames[facet.field].values[term.term] || term.term }}
+          <a ng-click="$api.refine(facet.field, term.term)" href="javascript:void(0)">
+            {{ facet | facetLabel:term.term }}
             <span class="badge pull-right">{{ term.count }}</span>
           </a>
         </li>
@@ -25,7 +25,7 @@
     </div>
   </div>
   <div class="col-lg-9 col-lg-push-3">
-    <ul infinite-scroll="loadPackages(next)" threshold="100" can-load="canLoad" class="pkg-list list-unstyled">
+    <ul infinite-scroll="$api.loadNext()" threshold="100" can-load="$api.canLoad" class="pkg-list list-unstyled">
       <li ng-repeat="package in packages">
         <section class="package-entry">
           <div class="panel">
@@ -46,12 +46,12 @@
           </div>
         </section>
       </li>
-      <li ng-show="!canLoad">
+      <li ng-show="!$api.canLoad">
         <div class="well well-small"><p>Loading…</p></div>
       </li>
     </ul>
 
-    <div ng-if="canLoad && packages.length === 0" class="well well-small">
+    <div ng-if="$api.canLoad && packages.length === 0" class="well well-small">
       No result.
     </div>
   </div>
