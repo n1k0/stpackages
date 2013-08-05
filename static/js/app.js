@@ -174,7 +174,9 @@ function initListScope($scope, $http) {
   };
 }
 
-function PackageListCtrl($http, $scope, $routeParams) {
+var app = angular.module('SublimePackages', ['infiniteScroll']);
+
+app.controller('PackageListCtrl', function($http, $scope, $routeParams) {
   var titles = {
     recent: 'Recently created packages',
     updated: 'Recently updated packages',
@@ -188,9 +190,9 @@ function PackageListCtrl($http, $scope, $routeParams) {
   initListScope($scope, $http);
 
   $scope.loadPackages(0);
-}
+});
 
-function PackageSearchCtrl($http, $scope, $routeParams) {
+app.controller('PackageSearchCtrl', function($http, $scope, $routeParams) {
   $scope.type = "" + $routeParams.q;
   $scope.baseUrl = '/api/search?q=' + encodeURIComponent($scope.type);
   $scope.title = 'Packages matching "' + $scope.type + '"';
@@ -198,18 +200,18 @@ function PackageSearchCtrl($http, $scope, $routeParams) {
   initListScope($scope, $http);
 
   $scope.loadPackages(0);
-}
+});
 
-function PackageDetailsCtrl($http, $scope, $routeParams) {
+app.controller('PackageDetailsCtrl', function($http, $scope, $routeParams) {
   $http.get('/api/details/' + $routeParams.slug)
     .success(function(pkg) {
       $scope['package'] = pkg; // yeah, package is a reserved word
       setTimeout(md); // wonder how to wait for angular to have set scope here
     })
     .error(httpError);
-}
+});
 
-function NavigationCtrl($scope) {
+app.controller('NavigationCtrl', function($scope) {
   try {
     $scope.section = document.location.hash.slice(2);
   } catch (err) {
@@ -222,26 +224,24 @@ function NavigationCtrl($scope) {
     if (this.q)
       document.location.hash = "/search/" + encodeURIComponent(this.q);
   };
-}
+});
 
-angular
-  .module('SublimePackages', ['infiniteScroll'])
-  .config(['$routeProvider', function($routeProvider) {
-    $routeProvider
-      .when('/details/:slug', {
-        templateUrl: '/partials/details.html',
-        controller: PackageDetailsCtrl
-      })
-      .when('/search/:q', {
-        templateUrl: '/partials/list.html',
-        controller: PackageSearchCtrl
-      })
-      .when('/about', {
-        templateUrl: '/partials/about.html'
-      })
-      .when('/:type', {
-        templateUrl: '/partials/list.html',
-        controller: PackageListCtrl
-      })
-      .otherwise({redirectTo: '/'});
-  }]);
+app.config(['$routeProvider', function($routeProvider) {
+  $routeProvider
+    .when('/details/:slug', {
+      templateUrl: '/partials/details.html',
+      controller: 'PackageDetailsCtrl'
+    })
+    .when('/search/:q', {
+      templateUrl: '/partials/list.html',
+      controller: 'PackageSearchCtrl'
+    })
+    .when('/about', {
+      templateUrl: '/partials/about.html'
+    })
+    .when('/:type', {
+      templateUrl: '/partials/list.html',
+      controller: 'PackageListCtrl'
+    })
+    .otherwise({redirectTo: '/'});
+}]);
