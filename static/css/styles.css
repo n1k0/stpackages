@@ -77,6 +77,10 @@
 .pkg-readme h4 {font-size: 1.4em;}
 .pkg-readme h5 {font-size: 1.2em;}
 
+.pkg-readme img {
+  max-width: 100%;
+}
+
 .pkg-readme pre {
   padding: .2em;
 }
