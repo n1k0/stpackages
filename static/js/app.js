@@ -59,33 +59,9 @@ angular.module('infiniteScroll', []).directive('infiniteScroll', function($windo
 });
 
 /**
- * Request cache factory
- */
-app.factory('$requestCache', function() {
-  return {
-    _cache: {},
-    add: function(url, results) {
-      if (!url || !results)
-        return;
-      this._cache[url] = {date: new Date(), results: results};
-    },
-    has: function(url) {
-      return url in this._cache;
-    },
-    get: function(url) {
-      if (this.has(url) && !this.outdated(url))
-        return this._cache[url].results;
-    },
-    outdated: function(url) {
-      return new Date() - this._cache[url].date >= 1 * 60 * 60 * 1000;
-    }
-  };
-});
-
-/**
  * Api service factory.
  */
-app.factory('$api', function($http, $requestCache) {
+app.factory('$api', function($http) {
   function buildUrl(baseUrl, params) {
     var url = baseUrl.replace(/(\?|&)$/, '');
     params = params || {};
@@ -130,32 +106,26 @@ app.factory('$api', function($http, $requestCache) {
 
       if (!this.canLoad || (this.total > 0 && this.offset + 1 >= this.total))
         return;
-
-      var url = buildUrl(this.baseUrl, {
-        offset: ~~this.offset,
-        filters: this.filters || {}
-      });
-
-      function success(results) {
-        self.total = results.total;
-        self.canLoad = true;
-        $requestCache.add(url, results);
-        self.onResults({
-          offset: self.offset,
-          filters: self.filters,
-          packages: results.packages,
-          total: results.total,
-          facets: results.facets
-        });
-        self.offset += 12;
-      }
-
-      if ($requestCache.get(url))
-        return success($requestCache.get(url));
-
       this.canLoad = false;
 
-      $http.get(url).success(success).error(httpError);
+      $http.get(buildUrl(this.baseUrl, {
+        offset: ~~this.offset,
+        filters: this.filters || {}
+      }))
+        .error(httpError)
+        .success(function(results) {
+          self.total = results.total;
+          self.canLoad = true;
+          self.onResults({
+            offset: self.offset,
+            filters: self.filters,
+            packages: results.packages,
+            total: results.total,
+            facets: results.facets
+          });
+          self.offset += 12;
+        });
+
       return this;
     },
 
