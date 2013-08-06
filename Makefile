@@ -5,18 +5,20 @@ dev:
 	nodemon app.js
 
 import:
-	mv data data.bck
-	mkdir data
-	node import.js
+	bin/stpackages import
 
 index:
-	node index-db.js
+	bin/stpackages backup
+	bin/stpackages index
 
 install:
 	npm install
 
 jshint:
 	@./node_modules/jshint/bin/jshint *.js static test
+
+revert:
+	bin/stpackages revert
 
 run:
 	node app.js
@@ -28,4 +30,4 @@ test: jshint test-unit
 test-unit:
 	@NODE_ENV=test ./node_modules/.bin/mocha --reporter $(REPORTER) $(MOCHA_OPTS) test
 
-.PHONY: dev import index install jshint run sync test test-unit
+.PHONY: dev import index install jshint revert run sync test test-unit
