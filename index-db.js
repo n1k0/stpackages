@@ -16,7 +16,7 @@ db.load(dataDir, function(err, data) {
   client.deleteIndex("stpackages")
     .on('error', onError)
     .on('data', function() {
-      async.mapLimit(data, 15, function(pkg, cb) {
+      async.map(data, function(pkg, cb) {
         client.index("stpackages", "package", pkg, pkg.slug)
           .on('error', onError)
           .on('data', function(data) {

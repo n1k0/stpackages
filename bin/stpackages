@@ -1,0 +1,141 @@
+#!/usr/bin/env node
+
+require('colors');
+
+var async = require('async');
+var fs = require('fs');
+var path = require('path');
+var importer = require('../lib/import');
+var db = require('../lib/db');
+var libsearch = require('../lib/search');
+var printer = require('../lib/printer');
+var program = require('../node_modules/commander');
+
+var defaultJSONDB = 'https://raw.github.com/wbond/package_control_channel/master/repositories.json';
+var DATA_DIR = path.join(__dirname, '..', 'data');
+
+function getVersion() {
+  try {
+    var packages = path.join(__dirname, '..', 'package.json');
+    return JSON.parse(fs.readFileSync(packages)).version;
+  } catch (err) {
+    printer.warn(err);
+    return "unknow";
+  }
+}
+
+program.version(getVersion());
+
+program
+  .command('backup')
+  .description('Backup current database as JSON in the backup/ directory')
+  .action(function() {
+    libsearch.backup(function(err, message) {
+      if (err)
+        return printer.warn(err);
+      printer.success(message);
+    });
+  });
+
+program
+  .command('import')
+  .description('Imports packages information from the Outside World')
+  .action(function() {
+    var jsonDB = process.env.PACKAGE_CONTROL_DB_URL || defaultJSONDB;
+    importer.run(jsonDB, function(err) {
+      if (err)
+        return printer.warn(err);
+      printer.success("Import complete.");
+    });
+  });
+
+program
+  .command('index')
+  .description('Indexes the available data')
+  .action(function() {
+    db.load(DATA_DIR, function(err, packages) {
+      if (err)
+        return printer.warn(err);
+      async.map(packages, libsearch.indexPackage, function(err, results) {
+        if (err)
+          return printer.warn(err);
+        printer.success("" + results.length + " packages indexed.");
+      });
+    });
+  });
+
+program
+  .command('index-check')
+  .description('Retrieves informations about the database index health')
+  .action(function() {
+    libsearch.dump(function(err, data) {
+      var index = JSON.parse(data);
+      if (err)
+        return printer.warn(err);
+      printer.info("Database index contains " + index.total + " packages");
+    });
+  });
+
+program
+  .command('list-backups')
+  .description('Lists currently available backups')
+  .action(function() {
+    printer.info("Available backups:");
+    printer.info("");
+    libsearch.listBackups().forEach(function(backup) {
+      printer.info("-", backup.name.green, "-", backup.length + " packages");
+    });
+    printer.info("");
+    printer.info("To install a particular one:");
+    printer.info("");
+    printer.info("    $ bin/stpackages restore <backup_name.json>");
+    printer.info("");
+  });
+
+program
+  .command('restore <backup>')
+  .description('Restores database using a particular JSON backup')
+  .action(function(backup) {
+    libsearch.restore(backup, function(err, message) {
+      if (err)
+        return printer.warn(err);
+      printer.success(message);
+    });
+  });
+
+program
+  .command('revert')
+  .description('Reverts database using latest available JSON backup, if any')
+  .action(function() {
+    libsearch.revert(function(err, message) {
+      if (err)
+        return printer.warn(err);
+      printer.success(message);
+    });
+  });
+
+program
+  .command('search <q>')
+  .description('Searches for packages')
+  .option('-p, --page [int]', 'results page number', parseInt)
+  .action(function(q, options) {
+    var perPage = 10;
+    options.page = options.page || 1;
+    var offset = (options.page - 1) * perPage;
+    libsearch.searchPackages({
+      json: function(data) {
+        printer.success("Search results for " + q.yellow);
+        printer.success("" + data.total + " packages found | page " + options.page);
+        printer.info("");
+        data.packages.forEach(function(pkg, i) {
+          var ind = ++i + ((options.page - 1) * perPage);
+          printer.info(ind + ". " + pkg.name.bold + " - " + pkg.url.blue.underline);
+          if (pkg.description)
+            printer.info("   " + pkg.description.grey);
+        });
+        printer.info("");
+      }
+    }, q, {offset: offset, perPage: perPage});
+  });
+
+program.parse(process.argv);
