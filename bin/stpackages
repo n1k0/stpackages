@@ -6,6 +6,7 @@ var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var importer = require('../lib/import');
+var stcompat = require('../lib/stcompat');
 var db = require('../lib/db');
 var libsearch = require('../lib/search');
 var printer = require('../lib/printer');
@@ -13,6 +14,7 @@ var program = require('../node_modules/commander');
 
 var defaultJSONDB = 'https://raw.github.com/wbond/package_control_channel/master/repositories.json';
 var DATA_DIR = path.join(__dirname, '..', 'data');
+var searchIndex = new libsearch.SearchIndex();
 
 function getVersion() {
   try {
@@ -30,7 +32,7 @@ program
   .command('backup')
   .description('Backup current database as JSON in the backup/ directory')
   .action(function() {
-    libsearch.backup(function(err, message) {
+    searchIndex.backup(function(err, message) {
       if (err)
         return printer.warn(err);
       printer.success(message);
@@ -50,17 +52,35 @@ program
   });
 
 program
+  .command('import-compat')
+  .description('Imports ST3 compatibility information from CanISwitchToSublimeText3')
+  .action(function() {
+    stcompat.fetchCompatData(function(err, compatData) {
+      if (err)
+        return printer.warn(err);
+      var len = Object.keys(compatData).length;
+      printer.info("Fetched compatibility info: " + ("" + len).green + " entries");
+      searchIndex.updateCompatData(compatData, function(err, packages) {
+        if (err)
+          return printer.warn(err);
+        printer.success("Updated " + packages.length + " packages compatibility info.");
+      });
+    });
+  });
+
+program
   .command('index')
   .description('Indexes the available data')
   .action(function() {
     db.load(DATA_DIR, function(err, packages) {
       if (err)
         return printer.warn(err);
-      async.map(packages, libsearch.indexPackage, function(err, results) {
-        if (err)
-          return printer.warn(err);
-        printer.success("" + results.length + " packages indexed.");
-      });
+      async.map(packages, searchIndex.indexPackage.bind(searchIndex),
+        function(err, results) {
+          if (err)
+            return printer.warn(err);
+          printer.success("" + results.length + " packages indexed.");
+        });
     });
   });
 
@@ -68,7 +88,7 @@ program
   .command('index-check')
   .description('Retrieves informations about the database index health')
   .action(function() {
-    libsearch.dump(function(err, data) {
+    searchIndex.dump(function(err, data) {
       var index = JSON.parse(data);
       if (err)
         return printer.warn(err);
@@ -82,7 +102,7 @@ program
   .action(function() {
     printer.info("Available backups:");
     printer.info("");
-    libsearch.listBackups().forEach(function(backup) {
+    searchIndex.listBackups().forEach(function(backup) {
       printer.info("-", backup.name.green, "-", backup.length + " packages");
     });
     printer.info("");
@@ -96,7 +116,7 @@ program
   .command('restore <backup>')
   .description('Restores database using a particular JSON backup')
   .action(function(backup) {
-    libsearch.restore(backup, function(err, message) {
+    searchIndex.restore(backup, function(err, message) {
       if (err)
         return printer.warn(err);
       printer.success(message);
@@ -107,7 +127,7 @@ program
   .command('revert')
   .description('Reverts database using latest available JSON backup, if any')
   .action(function() {
-    libsearch.revert(function(err, message) {
+    searchIndex.revert(function(err, message) {
       if (err)
         return printer.warn(err);
       printer.success(message);
@@ -119,10 +139,10 @@ program
   .description('Searches for packages')
   .option('-p, --page [int]', 'results page number', parseInt)
   .action(function(q, options) {
-    var perPage = 10;
+    var perPage = 5;
     options.page = options.page || 1;
     var offset = (options.page - 1) * perPage;
-    libsearch.searchPackages({
+    searchIndex.searchPackages({
       json: function(data) {
         printer.success("Search results for " + q.yellow);
         printer.success("" + data.total + " packages found | page " + options.page);
@@ -130,10 +150,11 @@ program
         data.packages.forEach(function(pkg, i) {
           var ind = ++i + ((options.page - 1) * perPage);
           printer.info(ind + ". " + pkg.name.bold + " - " + pkg.url.blue.underline);
-          if (pkg.description)
-            printer.info("   " + pkg.description.grey);
+          if (pkg.description) printer.info("   " + pkg.description.grey);
+          if (pkg.st3compat)   printer.info("   st3compat: " + pkg.st3compat);
+          if (pkg.platforms)   printer.info("   platforms: " + pkg.platforms.join(', '));
+          printer.info("");
         });
-        printer.info("");
       }
     }, q, {offset: offset, perPage: perPage});
   });

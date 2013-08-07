@@ -1,0 +1,21 @@
+{
+  "total": 2,
+  "packages": [
+    {
+      "slug": "pkg1",
+      "name": "Package 1",
+      "description": "foo",
+      "nbStargazers": 42,
+      "createdAt": "2013-01-01T00:00:00Z",
+      "updatedAt": "2013-03-01T00:00:00Z"
+    },
+    {
+      "slug": "pkg2",
+      "name": "Package 2",
+      "description": "bar",
+      "nbStargazers": 43,
+      "createdAt": "2013-02-01T00:00:00Z",
+      "updatedAt": "2013-02-01T00:00:00Z"
+    }
+  ]
+}
