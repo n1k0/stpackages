@@ -142,21 +142,24 @@ program
     var perPage = 5;
     options.page = options.page || 1;
     var offset = (options.page - 1) * perPage;
-    searchIndex.searchPackages({
-      json: function(data) {
-        printer.success("Search results for " + q.yellow);
-        printer.success("" + data.total + " packages found | page " + options.page);
+    searchIndex.searchPackages(q, {
+      offset: offset,
+      perPage: perPage
+    }, function(err, data) {
+      if (err)
+        return printer.error(err);
+      printer.success("Search results for " + q.yellow);
+      printer.success("" + data.total + " packages found | page " + options.page);
+      printer.info("");
+      data.packages.forEach(function(pkg, i) {
+        var ind = ++i + ((options.page - 1) * perPage);
+        printer.info(ind + ". " + pkg.name.bold + " - " + pkg.url.blue.underline);
+        if (pkg.description) printer.info("   " + pkg.description.grey);
+        if (pkg.st3compat)   printer.info("   st3compat: " + pkg.st3compat);
+        if (pkg.platforms)   printer.info("   platforms: " + pkg.platforms.join(', '));
         printer.info("");
-        data.packages.forEach(function(pkg, i) {
-          var ind = ++i + ((options.page - 1) * perPage);
-          printer.info(ind + ". " + pkg.name.bold + " - " + pkg.url.blue.underline);
-          if (pkg.description) printer.info("   " + pkg.description.grey);
-          if (pkg.st3compat)   printer.info("   st3compat: " + pkg.st3compat);
-          if (pkg.platforms)   printer.info("   platforms: " + pkg.platforms.join(', '));
-          printer.info("");
-        });
-      }
-    }, q, {offset: offset, perPage: perPage});
+      });
+    });
   });
 
 program.parse(process.argv);
