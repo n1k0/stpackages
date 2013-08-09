@@ -7,10 +7,6 @@ dev:
 import:
 	bin/stpackages import
 
-index:
-	bin/stpackages backup
-	bin/stpackages index
-
 install:
 	npm install
 
@@ -30,4 +26,4 @@ test: test-unit jshint
 test-unit:
 	@NODE_ENV=test ./node_modules/.bin/mocha --reporter $(REPORTER) $(MOCHA_OPTS) test
 
-.PHONY: dev import index install jshint revert run sync test test-unit
+.PHONY: dev import install jshint revert run sync test test-unit

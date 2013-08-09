@@ -2,19 +2,17 @@
 
 require('colors');
 
-var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var importer = require('../lib/import');
 var stcompat = require('../lib/stcompat');
-var db = require('../lib/db');
 var libsearch = require('../lib/search');
 var printer = require('../lib/printer');
 var program = require('../node_modules/commander');
 
-var defaultJSONDB = 'https://raw.github.com/wbond/package_control_channel/master/repositories.json';
-var DATA_DIR = path.join(__dirname, '..', 'data');
 var searchIndex = new libsearch.SearchIndex();
+
+searchIndex.on("info", printer.info);
 
 function getVersion() {
   try {
@@ -43,11 +41,14 @@ program
   .command('import')
   .description('Imports packages information from the Outside World')
   .action(function() {
-    var jsonDB = process.env.PACKAGE_CONTROL_DB_URL || defaultJSONDB;
-    importer.run(jsonDB, function(err) {
+    searchIndex.backup(function(err) {
       if (err)
-        return printer.warn(err);
-      printer.success("Import complete.");
+        return printer.warn("Couldn't backup, aborting.");
+      importer.run(function(err) {
+        if (err)
+          throw err;
+        printer.success("Packages imported.");
+      });
     });
   });
 
@@ -65,22 +66,6 @@ program
           return printer.warn(err);
         printer.success("Updated " + packages.length + " packages compatibility info.");
       });
-    });
-  });
-
-program
-  .command('index')
-  .description('Indexes the available data')
-  .action(function() {
-    db.load(DATA_DIR, function(err, packages) {
-      if (err)
-        return printer.warn(err);
-      async.map(packages, searchIndex.indexPackage.bind(searchIndex),
-        function(err, results) {
-          if (err)
-            return printer.warn(err);
-          printer.success("" + results.length + " packages indexed.");
-        });
     });
   });
 
