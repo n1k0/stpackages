@@ -2,6 +2,7 @@
 
 require('colors');
 
+var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var importer = require('../lib/import');
@@ -38,17 +39,31 @@ program
   });
 
 program
+  .command('drop')
+  .description('Drop all data from the index. Handle with care.')
+  .action(function() {
+    searchIndex.dropAll(function(err, message) {
+      if (err)
+        return printer.warn(err);
+      printer.success("Dropped index.", message);
+    });
+  });
+
+program
   .command('import')
   .description('Imports packages information from the Outside World')
-  .action(function() {
-    searchIndex.backup(function(err) {
+  .option('-n, --no-backup', 'No backup')
+  .action(function(options) {
+    var ops = [];
+    if (options.backup)
+      ops.push(searchIndex.backup.bind(searchIndex));
+    else
+      printer.warn("Skipping backup");
+    ops.push(importer.run.bind(importer));
+    async.waterfall(ops, function(err) {
       if (err)
-        return printer.warn("Couldn't backup, aborting.");
-      importer.run(function(err) {
-        if (err)
-          throw err;
-        printer.success("Packages imported.");
-      });
+        return printer.warn("Unable to process import", err);
+      printer.success("Packages imported.");
     });
   });
 
