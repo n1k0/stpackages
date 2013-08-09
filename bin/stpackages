@@ -1,0 +1,165 @@
+#!/usr/bin/env node
+
+require('colors');
+
+var async = require('async');
+var fs = require('fs');
+var path = require('path');
+var importer = require('../lib/import');
+var stcompat = require('../lib/stcompat');
+var libsearch = require('../lib/search');
+var printer = require('../lib/printer');
+var program = require('../node_modules/commander');
+
+var searchIndex = new libsearch.SearchIndex();
+
+searchIndex.on("info", printer.info);
+
+function getVersion() {
+  try {
+    var packages = path.join(__dirname, '..', 'package.json');
+    return JSON.parse(fs.readFileSync(packages)).version;
+  } catch (err) {
+    printer.warn(err);
+    return "unknow";
+  }
+}
+
+program.version(getVersion());
+
+program
+  .command('backup')
+  .description('Backup current database as JSON in the backup/ directory')
+  .action(function() {
+    searchIndex.backup(function(err, message) {
+      if (err)
+        return printer.warn(err);
+      printer.success(message);
+    });
+  });
+
+program
+  .command('drop')
+  .description('Drop all data from the index. Handle with care.')
+  .action(function() {
+    searchIndex.dropAll(function(err, message) {
+      if (err)
+        return printer.warn(err);
+      printer.success("Dropped index.", message);
+    });
+  });
+
+program
+  .command('import')
+  .description('Imports packages information from the Outside World')
+  .option('-n, --no-backup', 'No backup')
+  .action(function(options) {
+    var ops = [];
+    if (options.backup)
+      ops.push(searchIndex.backup.bind(searchIndex));
+    else
+      printer.warn("Skipping backup");
+    ops.push(importer.run.bind(importer));
+    async.waterfall(ops, function(err) {
+      if (err)
+        return printer.warn("Unable to process import", err);
+      printer.success("Packages imported.");
+    });
+  });
+
+program
+  .command('import-compat')
+  .description('Imports ST3 compatibility information from CanISwitchToSublimeText3')
+  .action(function() {
+    stcompat.fetchCompatData(function(err, compatData) {
+      if (err)
+        return printer.warn(err);
+      var len = Object.keys(compatData).length;
+      printer.info("Fetched compatibility info: " + ("" + len).green + " entries");
+      searchIndex.updateCompatData(compatData, function(err, packages) {
+        if (err)
+          return printer.warn(err);
+        printer.success("Updated " + packages.length + " packages compatibility info.");
+      });
+    });
+  });
+
+program
+  .command('index-check')
+  .description('Retrieves informations about the database index health')
+  .action(function() {
+    searchIndex.dump(function(err, data) {
+      var index = JSON.parse(data);
+      if (err)
+        return printer.warn(err);
+      printer.info("Database index contains " + index.total + " packages");
+    });
+  });
+
+program
+  .command('list-backups')
+  .description('Lists currently available backups')
+  .action(function() {
+    printer.info("Available backups:");
+    printer.info("");
+    searchIndex.listBackups().forEach(function(backup) {
+      printer.info("-", backup.name.green, "-", backup.length + " packages");
+    });
+    printer.info("");
+    printer.info("To install a particular one:");
+    printer.info("");
+    printer.info("    $ bin/stpackages restore <backup_name.json>");
+    printer.info("");
+  });
+
+program
+  .command('restore <backup>')
+  .description('Restores database using a particular JSON backup')
+  .action(function(backup) {
+    searchIndex.restore(backup, function(err, message) {
+      if (err)
+        return printer.warn(err);
+      printer.success(message);
+    });
+  });
+
+program
+  .command('revert')
+  .description('Reverts database using latest available JSON backup, if any')
+  .action(function() {
+    searchIndex.revert(function(err, message) {
+      if (err)
+        return printer.warn(err);
+      printer.success(message);
+    });
+  });
+
+program
+  .command('search <q>')
+  .description('Searches for packages')
+  .option('-p, --page [int]', 'results page number', parseInt)
+  .action(function(q, options) {
+    var perPage = 5;
+    options.page = options.page || 1;
+    var offset = (options.page - 1) * perPage;
+    searchIndex.searchPackages(q, {
+      offset: offset,
+      perPage: perPage
+    }, function(err, data) {
+      if (err)
+        return printer.error(err);
+      printer.success("Search results for " + q.yellow);
+      printer.success("" + data.total + " packages found | page " + options.page);
+      printer.info("");
+      data.packages.forEach(function(pkg, i) {
+        var ind = ++i + ((options.page - 1) * perPage);
+        printer.info(ind + ". " + pkg.name.bold + " - " + pkg.url.blue.underline);
+        if (pkg.description) printer.info("   " + pkg.description.grey);
+        if (pkg.st3compat)   printer.info("   st3compat: " + pkg.st3compat);
+        if (pkg.platforms)   printer.info("   platforms: " + pkg.platforms.join(', '));
+        printer.info("");
+      });
+    });
+  });
+
+program.parse(process.argv);

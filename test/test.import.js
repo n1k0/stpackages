@@ -37,22 +37,4 @@ describe("Importer", function() {
       expectType("https://foo.bar/plop", "unknown");
     });
   });
-
-  describe("packageControlDataToObjects", function() {
-    it("should extract expected package control data", function() {
-      var objects = importer.packageControlDataToObjects({
-        repositories: [
-          "https://github.com/foo/p1",
-          "https://bitbucket.org/foo/p2",
-          "http://foo.bar/p3.json"
-        ],
-        package_name_map: {p2: "rp2"}
-      });
-      expect(objects).to.deep.equal([
-        { url: 'https://github.com/foo/p1', type: 'github', name: 'p1', slug: 'p1' },
-        { url: 'https://bitbucket.org/foo/p2', type: 'bitbucket', name: 'rp2', slug: 'rp2' },
-        { url: 'http://foo.bar/p3.json', type: 'json' }
-      ]);
-    });
-  });
 });

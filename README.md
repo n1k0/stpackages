@@ -8,11 +8,14 @@ SublimePackages.com
 Prerequisites
 -------------
 
-The Web application server requires [nodejs] >= 0.10.15. Data persistence is achieved through [ElasticSearch].
+The Web application server requires [nodejs] >= 0.10.15. Data persistence is
+achieved through [ElasticSearch].
 
-By default, the app server will look for an instance running on `localhost:9200`.
+By default, the app server will look for an ElasticSearch server instance
+running on `localhost:9200`.
 
-To configure the settings and credentials of your ES server, you can set the following environment variables:
+To configure the settings and credentials of an ES server, you can set the
+following environment variables:
 
 - `ELASTICSEARCH_HOST`: The ES server host name
 - `ELASTICSEARCH_PORT`: The ES server port
@@ -40,8 +43,8 @@ script.
 
 ## Import
 
-An import script is provided to import existing packages living in
-[Package Control].
+An import script is provided to import information from existing packages living
+in [Package Control].
 
 Detailled data will be fetched using the [Github API], so you need to set the
 `GITHUB_API_TOKEN` env var to make it work; eg. if your API token is
@@ -76,7 +79,8 @@ Production:
 
     $ make run
 
-**Hint:** It may be a good idea to use something like [forever] to ensure the app is always live:
+**Hint:** It may be a good idea to use something like [forever] to ensure the
+app is always live:
 
     $ npm install forever
     $ forever start app.js
