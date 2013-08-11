@@ -1,6 +1,8 @@
 SublimePackages.com
 ===================
 
+**Important notice**: The hosted sublimepackages.com has been terminated since Package Control now has a [great new website](http://sublime.wbond.net/) with better features than what I was initially trying to bring with this project.
+
 [SublimePackages] is a [nodejs] Web application listing sublime text packages.
 
 [![Build Status](https://travis-ci.org/n1k0/stpackages.png?branch=master)](https://travis-ci.org/n1k0/stpackages) ![Dependencies Status](https://david-dm.org/n1k0/stpackages.png)
